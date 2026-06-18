@@ -1,66 +1,17 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../services/api';
 import { authService } from '../services/auth.service';
 import { Session } from '../types';
+import { useSession } from '../hooks/useSession';
 
 function Sessions() {
-  const [sessions, setSessions] = useState<any>([]);
-  const [loading, setLoading] = useState<any>(true);
-  const [error, setError] = useState<any>('');
   const user = authService.getCurrentUser();
-  const token = authService.getToken();
-      const controller = new AbortController();
+  const { sessions, error, loading, deleteSession } = useSession();
 
-  useEffect(() => {
-    
-
-    fetchSessions(controller.signal);
-
-    return () => {
-      controller.abort();
-    }
-  }, []);
-
-  const fetchSessions = async (abortSignal: AbortSignal): Promise<void > => {
-
-    try {
-      setLoading(true);
-      const response = await api.get<Session[]>('/session', {
-         signal: abortSignal,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setSessions(response.data);
-    } catch (err: unknown) {
-      if(!abortSignal.aborted) {
-        setError('Failed to load sessions');
-        console.error(err);
-      } 
-     
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (sessionId: number): Promise<void> => {
+  const handleDelete = (id: number) => {
     if (!window.confirm('Are you sure you want to delete this session?')) {
       return;
     }
-
-    try {
-      await api.delete(`/session/${sessionId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      fetchSessions(controller.signal);
-    } catch (err: unknown) {
-      alert('Failed to delete session');
-      console.error(err);
-    }
+    deleteSession(id);
   };
 
   if (loading) {
@@ -102,8 +53,11 @@ function Sessions() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sessions.map((session: any) => (
-              <div key={session.id} className="bg-white rounded-lg shadow-md p-6">
+            {sessions.map((session: Session) => (
+              <div
+                key={session.id}
+                className="bg-white rounded-lg shadow-md p-6"
+              >
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   {session.name}
                 </h3>
@@ -111,7 +65,8 @@ function Sessions() {
                   Date: {new Date(session.date).toLocaleDateString()}
                 </p>
                 <p className="text-gray-600 mb-2">
-                  Teacher: {session.teacher.firstName} {session.teacher.lastName}
+                  Teacher: {session.teacher.firstName}{' '}
+                  {session.teacher.lastName}
                 </p>
                 <p className="text-gray-600 mb-4">
                   Participants: {session.users.length}

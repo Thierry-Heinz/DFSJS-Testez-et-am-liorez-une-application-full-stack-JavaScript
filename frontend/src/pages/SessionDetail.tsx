@@ -3,36 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { authService } from '../services/auth.service';
 import { Session } from '../types';
+import { useSession } from '../hooks/useSession';
 
 function SessionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [session, setSession] = useState<any>(null);
-  const [loading, setLoading] = useState<any>(true);
-  const [error, setError] = useState<any>('');
+
   const user = authService.getCurrentUser();
-  const token = authService.getToken();
 
-  useEffect(() => {
-    fetchSession();
-  }, [id]);
-
-  const fetchSession = async (): Promise<any> => {
-    try {
-      setLoading(true);
-      const response = await api.get<Session>(`/session/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setSession(response.data);
-    } catch (err: any) {
-      setError('Failed to load session details');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { sessions, error, loading, deleteSession } = useSession(id);
 
   const handleParticipate = async (): Promise<any> => {
     try {
@@ -43,7 +22,7 @@ function SessionDetail() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       fetchSession();
     } catch (err: any) {
@@ -92,7 +71,7 @@ function SessionDetail() {
     );
   }
 
-  if (error || !session) {
+  if (error || !sessions) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -102,22 +81,24 @@ function SessionDetail() {
     );
   }
 
-  const isParticipating = session.users.includes(user.id);
+  const isParticipating = sessions.users.includes(user.id);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="bg-white rounded-lg shadow-md p-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            {session.name}
+            {sessions.name}
           </h1>
 
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Details</h2>
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">
+              Details
+            </h2>
             <div className="space-y-2 text-gray-600">
               <p>
                 <strong>Date:</strong>{' '}
-                {new Date(session.date).toLocaleDateString('en-US', {
+                {new Date(sessions.date).toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
@@ -125,11 +106,11 @@ function SessionDetail() {
                 })}
               </p>
               <p>
-                <strong>Teacher:</strong> {session.teacher.firstName}{' '}
-                {session.teacher.lastName}
+                <strong>Teacher:</strong> {sessions.teacher.firstName}{' '}
+                {sessions.teacher.lastName}
               </p>
               <p>
-                <strong>Participants:</strong> {session.users.length}
+                <strong>Participants:</strong> {sessions.users.length}
               </p>
             </div>
           </div>
@@ -139,7 +120,7 @@ function SessionDetail() {
               Description
             </h2>
             <p className="text-gray-600 whitespace-pre-wrap">
-              {session.description}
+              {sessions.description}
             </p>
           </div>
 

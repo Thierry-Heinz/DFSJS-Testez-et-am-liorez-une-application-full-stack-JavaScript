@@ -7,6 +7,8 @@ function Sessions() {
   const user = authService.getCurrentUser();
   const { sessions, error, loading, deleteSession } = useSession();
 
+  console.log(sessions);
+
   const handleDelete = (id: number) => {
     if (!window.confirm('Are you sure you want to delete this session?')) {
       return;
@@ -47,11 +49,7 @@ function Sessions() {
           ) : null}
         </div>
 
-        {sessions.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <p className="text-gray-600">No sessions available</p>
-          </div>
-        ) : (
+        {sessions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sessions.map((session: Session) => (
               <div
@@ -83,17 +81,21 @@ function Sessions() {
                     View Details
                   </Link>
 
-                  {user && user.admin ? (
+                  {user && user.admin && (
                     <button
                       onClick={() => handleDelete(session.id)}
                       className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
                     >
                       Delete
                     </button>
-                  ) : null}
+                  )}
                 </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-md p-8 text-center">
+            <p className="text-gray-600">No sessions available</p>
           </div>
         )}
       </div>

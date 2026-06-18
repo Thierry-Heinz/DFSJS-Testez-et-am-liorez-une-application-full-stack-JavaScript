@@ -10,7 +10,7 @@ function Login() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.SubmitEvent<HTMLFormElement>,
   ): Promise<void> => {
     e.preventDefault();
     setError('');
@@ -19,8 +19,12 @@ function Login() {
     try {
       await authService.login({ email, password });
       navigate('/sessions');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
+    } catch (err: unknown) {
+      let errorMessage = 'Login failed';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -39,7 +43,7 @@ function Login() {
           </div>
         ) : null}
 
-        <form onSubmit={() => handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Email

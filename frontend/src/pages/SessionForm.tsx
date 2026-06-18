@@ -1,23 +1,23 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { authService } from '../services/auth.service';
-import { Teacher, Session } from '../types';
+import { Teacher, Session, SessionFormData } from '../types';
 
 function SessionForm() {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = !!id;
 
-  const [formData, setFormData] = useState<any>({
+  const [formData, setFormData] = useState<SessionFormData>({
     name: '',
     date: '',
     description: '',
-    teacherId: '',
+    teacherId: 0,
   });
-  const [teachers, setTeachers] = useState<any>([]);
-  const [loading, setLoading] = useState<any>(false);
-  const [error, setError] = useState<any>('');
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
   const user = authService.getCurrentUser();
   const token = authService.getToken();
 
@@ -35,7 +35,7 @@ function SessionForm() {
     }
   }, [id]);
 
-  const fetchTeachers = async (): Promise<any> => {
+  const fetchTeachers = async (): Promise<void> => {
     try {
       const response = await api.get<Teacher[]>('/teacher', {
         headers: {
@@ -43,12 +43,12 @@ function SessionForm() {
         },
       });
       setTeachers(response.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to fetch teachers', err);
     }
   };
 
-  const fetchSession = async (): Promise<any> => {
+  const fetchSession = async (): Promise<void> => {
     try {
       const response = await api.get<Session>(`/session/${id}`, {
         headers: {
@@ -62,13 +62,13 @@ function SessionForm() {
         description: session.description,
         teacherId: session.teacher.id,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError('Failed to load session');
       console.error(err);
     }
   };
 
-  const handleChange = (e: any): any => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value =
       e.target.name === 'teacherId' ? parseInt(e.target.value) : e.target.value;
     setFormData({
@@ -77,7 +77,9 @@ function SessionForm() {
     });
   };
 
-  const handleSubmit = async (e: any): Promise<any> => {
+  const handleSubmit = async (
+    e: React.SubmitEvent<HTMLFormElement>,
+  ): Promise<void> => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -97,8 +99,12 @@ function SessionForm() {
         });
       }
       navigate('/sessions');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to save session');
+    } catch (err: unknown) {
+      let errorMessage = 'Failed to save session';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -154,7 +160,7 @@ function SessionForm() {
               <select
                 name="teacherId"
                 value={formData.teacherId}
-                onChange={handleChange}
+                onChange={() => handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
                 required
               >
@@ -174,7 +180,7 @@ function SessionForm() {
               <textarea
                 name="description"
                 value={formData.description}
-                onChange={handleChange}
+                onChange={() => handleChange}
                 rows={6}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
                 required
@@ -187,7 +193,11 @@ function SessionForm() {
                 disabled={loading}
                 className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400"
               >
-                {loading ? 'Saving...' : isEditMode ? 'Update Session' : 'Create Session'}
+                {loading
+                  ? 'Saving...'
+                  : isEditMode
+                    ? 'Update Session'
+                    : 'Create Session'}
               </button>
               <button
                 type="button"

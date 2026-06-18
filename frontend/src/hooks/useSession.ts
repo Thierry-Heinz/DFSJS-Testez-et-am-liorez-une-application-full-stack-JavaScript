@@ -12,16 +12,16 @@ export const useSession = (id?: number | undefined) => {
   const controller = useRef(new AbortController());
 
   useEffect(() => {
+    controller.current = new AbortController();
     fetchSessions(controller.current.signal);
 
     return () => {
       controller.current.abort();
     };
-  }, []);
+  }, [id]);
 
   const fetchSessions = async (abortSignal: AbortSignal): Promise<void> => {
     let url = `/session`;
-
     if (id) url += `/${id}`;
 
     try {
@@ -33,7 +33,9 @@ export const useSession = (id?: number | undefined) => {
         },
       });
 
-      setSessions(response.data);
+      setSessions(
+        Array.isArray(response.data) ? response.data : [response.data],
+      );
     } catch (err: unknown) {
       if (!abortSignal.aborted) {
         setError('Failed to load sessions');

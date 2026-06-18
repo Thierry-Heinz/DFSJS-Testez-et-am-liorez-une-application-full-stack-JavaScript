@@ -9,7 +9,7 @@ function SessionDetail() {
 
   const user = authService.getCurrentUser();
 
-  if (!id) {
+  if (!id || !user) {
     navigate('/sessions');
     return null;
   }

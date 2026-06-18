@@ -4,12 +4,14 @@ import { authService } from '../services/auth.service';
 
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState<any>('');
-  const [password, setPassword] = useState<any>('');
-  const [error, setError] = useState<any>('');
-  const [loading, setLoading] = useState<any>(false);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSubmit = async (e: any): Promise<any> => {
+  const handleSubmit = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -37,7 +39,7 @@ function Login() {
           </div>
         ) : null}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={() => handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Email
@@ -75,7 +77,10 @@ function Login() {
 
         <p className="mt-4 text-center text-gray-600">
           Don't have an account?{' '}
-          <Link to="/register" className="text-indigo-600 hover:text-indigo-800">
+          <Link
+            to="/register"
+            className="text-indigo-600 hover:text-indigo-800"
+          >
             Register here
           </Link>
         </p>

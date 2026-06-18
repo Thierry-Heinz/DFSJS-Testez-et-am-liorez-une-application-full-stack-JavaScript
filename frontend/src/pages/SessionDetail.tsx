@@ -9,7 +9,12 @@ function SessionDetail() {
 
   const user = authService.getCurrentUser();
 
-  const { session, error, loading, deleteSession, refetch } = useSession(id);
+  if (!id) {
+    navigate('/sessions');
+    return null;
+  }
+
+  const { session, error, loading, deleteSession, refetch } = useSession(+id);
   const { participate, unparticipate } = useParticipation({
     sessionId: id!,
     userId: user.id,
@@ -94,7 +99,7 @@ function SessionDetail() {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(+id!)}
+                  onClick={() => handleDelete(+id)}
                   className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
                 >
                   Delete

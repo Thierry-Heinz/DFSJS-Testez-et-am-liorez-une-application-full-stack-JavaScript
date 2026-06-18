@@ -3,7 +3,7 @@ import { Session } from '../types';
 import { authService } from '../services/auth.service';
 import api from '../services/api';
 
-export const useSession = (id?: string | undefined) => {
+export const useSession = (id?: number | undefined) => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');

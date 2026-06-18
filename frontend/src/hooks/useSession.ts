@@ -65,6 +65,7 @@ export const useSession = (id?: string | undefined) => {
 
   return {
     sessions,
+    session: sessions[0],
     loading,
     error,
     deleteSession,

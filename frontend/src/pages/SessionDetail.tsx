@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../services/api';
 import { authService } from '../services/auth.service';
-import { Session } from '../types';
 import { useSession } from '../hooks/useSession';
+import { useParticipation } from '../hooks/useParticipation';
 
 function SessionDetail() {
   const { id } = useParams();
@@ -11,56 +9,18 @@ function SessionDetail() {
 
   const user = authService.getCurrentUser();
 
-  const { sessions, error, loading, deleteSession } = useSession(id);
+  const { session, error, loading, deleteSession, refetch } = useSession(id);
+  const { participate, unparticipate } = useParticipation({
+    sessionId: id!,
+    userId: user.id,
+    refetch,
+  });
 
-  const handleParticipate = async (): Promise<any> => {
-    try {
-      await api.post(
-        `/session/${id}/participate/${user.id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      fetchSession();
-    } catch (err: any) {
-      alert('Failed to join session');
-      console.error(err);
-    }
-  };
-
-  const handleUnparticipate = async (): Promise<any> => {
-    try {
-      await api.delete(`/session/${id}/participate/${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      fetchSession();
-    } catch (err: any) {
-      alert('Failed to leave session');
-      console.error(err);
-    }
-  };
-
-  const handleDelete = async (): Promise<any> => {
+  const handleDelete = (id: number) => {
     if (!window.confirm('Are you sure you want to delete this session?')) {
       return;
     }
-
-    try {
-      await api.delete(`/session/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      navigate('/sessions');
-    } catch (err: any) {
-      alert('Failed to delete session');
-      console.error(err);
-    }
+    deleteSession(id);
   };
 
   if (loading) {
@@ -71,7 +31,7 @@ function SessionDetail() {
     );
   }
 
-  if (error || !sessions) {
+  if (error || !session) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -81,14 +41,14 @@ function SessionDetail() {
     );
   }
 
-  const isParticipating = sessions.users.includes(user.id);
+  const isParticipating = session.users.includes(user.id);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="bg-white rounded-lg shadow-md p-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            {sessions.name}
+            {session.name}
           </h1>
 
           <div className="mb-6">
@@ -98,7 +58,7 @@ function SessionDetail() {
             <div className="space-y-2 text-gray-600">
               <p>
                 <strong>Date:</strong>{' '}
-                {new Date(sessions.date).toLocaleDateString('en-US', {
+                {new Date(session.date).toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
@@ -106,11 +66,11 @@ function SessionDetail() {
                 })}
               </p>
               <p>
-                <strong>Teacher:</strong> {sessions.teacher.firstName}{' '}
-                {sessions.teacher.lastName}
+                <strong>Teacher:</strong> {session.teacher.firstName}{' '}
+                {session.teacher.lastName}
               </p>
               <p>
-                <strong>Participants:</strong> {sessions.users.length}
+                <strong>Participants:</strong> {session.users.length}
               </p>
             </div>
           </div>
@@ -120,7 +80,7 @@ function SessionDetail() {
               Description
             </h2>
             <p className="text-gray-600 whitespace-pre-wrap">
-              {sessions.description}
+              {session.description}
             </p>
           </div>
 
@@ -134,7 +94,7 @@ function SessionDetail() {
                   Edit
                 </button>
                 <button
-                  onClick={handleDelete}
+                  onClick={() => handleDelete(+id!)}
                   className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
                 >
                   Delete
@@ -144,14 +104,14 @@ function SessionDetail() {
               <>
                 {isParticipating ? (
                   <button
-                    onClick={handleUnparticipate}
+                    onClick={unparticipate}
                     className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
                   >
                     Leave Session
                   </button>
                 ) : (
                   <button
-                    onClick={handleParticipate}
+                    onClick={participate}
                     className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
                   >
                     Join Session

@@ -1,57 +1,23 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
-import { generateToken } from '../utils/jwt.util';
-
-const prisma = new PrismaClient();
+import { validateUser } from './auth.service';
+import { LoginSchema } from './dto/auth.dto';
+import z from 'zod';
 
 export class AuthController {
   async login(req: Request, res: Response) {
+    const { email, password } = req.body;
     try {
-      const { email, password } = req.body;
+      LoginSchema.parse({ email, password });
 
-      if (!email) {
-        return res.status(400).json({ message: 'Email is required' });
+      const existingUser = await validateUser(email, password);
+
+      return res.status(200).json(existingUser);
+    } catch (error:unknown) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: error.issues });
       }
-      if (!password) {
-        return res.status(400).json({ message: 'Password is required' });
-      }
-      if (typeof email !== 'string') {
-        return res.status(400).json({ message: 'Email must be a string' });
-      }
-      if (typeof password !== 'string') {
-        return res.status(400).json({ message: 'Password must be a string' });
-      }
-
-      const user = await prisma.user.findUnique({
-        where: { email },
-      });
-
-      if (!user) {
-        return res.status(401).json({ message: 'Invalid credentials' });
-      }
-
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-
-      if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Invalid credentials' });
-      }
-
-      const token = generateToken(user.id);
-
-      const response: any = {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        admin: user.admin,
-        token,
-      };
-
-      return res.status(200).json(response);
-    } catch (error: any) {
-      console.error('Login error:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+      const message = error instanceof Error ? error.message : 'Unauthorized';
+      return res.status(401).json({ message });
     }
   }
 
@@ -72,7 +38,9 @@ export class AuthController {
         return res.status(400).json({ message: 'Last name is required' });
       }
       if (password.length < 8) {
-        return res.status(400).json({ message: 'Password must be at least 8 characters' });
+        return res
+          .status(400)
+          .json({ message: 'Password must be at least 8 characters' });
       }
 
       const existingUser = await prisma.user.findUnique({

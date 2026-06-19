@@ -1,5 +1,4 @@
 import api from '../services/api';
-import { authService } from '../services/auth.service';
 
 type UseParticipateProps = {
   sessionId: number | undefined;
@@ -12,19 +11,9 @@ export const useParticipation = ({
   userId,
   refetch,
 }: UseParticipateProps) => {
-  const token = authService.getToken();
-
   const participate = async (): Promise<any> => {
     try {
-      await api.post(
-        `/session/${sessionId}/participate/${userId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      await api.post(`/session/${sessionId}/participate/${userId}`);
       refetch();
     } catch (err: any) {
       alert('Failed to join session');
@@ -34,11 +23,7 @@ export const useParticipation = ({
 
   const unparticipate = async (): Promise<any> => {
     try {
-      await api.delete(`/session/${sessionId}/participate/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.delete(`/session/${sessionId}/participate/${userId}`);
       refetch();
     } catch (err: any) {
       alert('Failed to leave session');

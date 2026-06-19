@@ -28,9 +28,6 @@ export const useSession = (id?: number | undefined) => {
       setLoading(true);
       const response = await api.get<Session[]>(url, {
         signal: abortSignal,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       setSessions(

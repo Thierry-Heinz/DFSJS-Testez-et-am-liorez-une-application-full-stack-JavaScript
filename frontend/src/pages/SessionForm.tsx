@@ -19,7 +19,6 @@ function SessionForm() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const user = authService.getCurrentUser();
-  const token = authService.getToken();
 
   // Redirect if not admin
   useEffect(() => {
@@ -37,11 +36,7 @@ function SessionForm() {
 
   const fetchTeachers = async (): Promise<void> => {
     try {
-      const response = await api.get<Teacher[]>('/teacher', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get<Teacher[]>('/teacher');
       setTeachers(response.data);
     } catch (err: unknown) {
       console.error('Failed to fetch teachers', err);
@@ -50,11 +45,7 @@ function SessionForm() {
 
   const fetchSession = async (): Promise<void> => {
     try {
-      const response = await api.get<Session>(`/session/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get<Session>(`/session/${id}`);
       const session = response.data;
       setFormData({
         name: session.name,
@@ -86,17 +77,9 @@ function SessionForm() {
 
     try {
       if (isEditMode) {
-        await api.put(`/session/${id}`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await api.put(`/session/${id}`, formData);
       } else {
-        await api.post('/session', formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await api.post('/session', formData);
       }
       navigate('/sessions');
     } catch (err: unknown) {

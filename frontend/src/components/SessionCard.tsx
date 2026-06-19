@@ -8,12 +8,11 @@ type Props = {
 };
 
 const SessionCard = ({ isAdmin, session, handleDelete }: Props) => {
+  const sessionDate = new Date(session.date).toLocaleDateString();
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h3 className="text-xl font-bold text-gray-800 mb-2">{session.name}</h3>
-      <p className="text-gray-600 mb-2">
-        Date: {new Date(session.date).toLocaleDateString()}
-      </p>
+      <p className="text-gray-600 mb-2">Date: {sessionDate}</p>
       <p className="text-gray-600 mb-2">
         Teacher: {session.teacher.firstName} {session.teacher.lastName}
       </p>

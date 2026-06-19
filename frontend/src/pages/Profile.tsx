@@ -13,7 +13,7 @@ function Profile() {
   const [promoteError, setPromoteError] = useState<string>('');
   const user = authService.getCurrentUser();
   const token = authService.getToken();
-  const isDev = import.meta.env.DEV === true;
+  const isDev = import.meta.env.DEV;
 
   useEffect(() => {
     if (user) {
@@ -31,7 +31,7 @@ function Profile() {
           },
         });
         setUserInfo(response.data);
-      } catch (err: any) {
+      } catch (err: unknown) {
         setError('Failed to load user information');
         console.error(err);
       } finally {
@@ -51,11 +51,7 @@ function Profile() {
       }
 
       try {
-        await api.delete(`/user/${user.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await api.delete(`/user/${user.id}`);
         authService.logout();
         navigate('/login');
       } catch (err: unknown) {
@@ -69,15 +65,7 @@ function Profile() {
     try {
       setPromoteError('');
       setPromoteLoading(true);
-      const response = await api.post(
-        '/user/promote-admin',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const response = await api.post('/user/promote-admin');
       setUserInfo(response.data);
       authService.updateCurrentUser({ admin: response.data.admin });
     } catch (err: unknown) {
@@ -159,7 +147,7 @@ function Profile() {
                 Account Type
               </label>
               <p className="text-lg text-gray-800">{userRole}</p>
-              {isDev && isAdmin && (
+              {isDev && !isAdmin && (
                 <div className="mt-3">
                   <button
                     onClick={handlePromoteAdmin}

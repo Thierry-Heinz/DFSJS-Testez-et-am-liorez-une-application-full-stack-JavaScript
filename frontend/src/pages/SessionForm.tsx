@@ -59,7 +59,11 @@ function SessionForm() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ): void => {
     const value =
       e.target.name === 'teacherId' ? parseInt(e.target.value) : e.target.value;
     setFormData({
@@ -143,12 +147,12 @@ function SessionForm() {
               <select
                 name="teacherId"
                 value={formData.teacherId}
-                onChange={() => handleChange}
+                onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
                 required
               >
                 <option value="">Select a teacher</option>
-                {teachers.map((teacher: any) => (
+                {teachers.map((teacher: Teacher) => (
                   <option key={teacher.id} value={teacher.id}>
                     {teacher.firstName} {teacher.lastName}
                   </option>
@@ -163,7 +167,7 @@ function SessionForm() {
               <textarea
                 name="description"
                 value={formData.description}
-                onChange={() => handleChange}
+                onChange={handleChange}
                 rows={6}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
                 required

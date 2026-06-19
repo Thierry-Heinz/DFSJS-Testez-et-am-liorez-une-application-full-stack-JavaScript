@@ -55,7 +55,7 @@ function Register() {
           </div>
         )}
 
-        <form onSubmit={() => handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               First Name

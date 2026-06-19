@@ -2,8 +2,8 @@ import api from '../services/api';
 import { authService } from '../services/auth.service';
 
 type UseParticipateProps = {
-  sessionId: string;
-  userId: number;
+  sessionId: number | undefined;
+  userId: number | undefined;
   refetch(): Promise<void>;
 };
 

@@ -7,14 +7,14 @@ function Sessions() {
   const user = authService.getCurrentUser();
   const { sessions, error, loading, deleteSession } = useSession();
 
-  console.log(sessions);
-
   const handleDelete = (id: number) => {
     if (!window.confirm('Are you sure you want to delete this session?')) {
       return;
     }
     deleteSession(id);
   };
+
+  const isAdmin = user?.admin;
 
   if (loading) {
     return (
@@ -39,14 +39,14 @@ function Sessions() {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Yoga Sessions</h1>
-          {user && user.admin ? (
+          {isAdmin && (
             <Link
               to="/sessions/create"
               className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700"
             >
               Create Session
             </Link>
-          ) : null}
+          )}
         </div>
 
         {sessions.length > 0 ? (
@@ -81,7 +81,7 @@ function Sessions() {
                     View Details
                   </Link>
 
-                  {user && user.admin && (
+                  {isAdmin && (
                     <button
                       onClick={() => handleDelete(session.id)}
                       className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"

@@ -9,17 +9,20 @@ function SessionDetail() {
 
   const user = authService.getCurrentUser();
 
+  const sessionId = id ? +id : undefined;
+
+  const { session, error, loading, deleteSession, refetch } =
+    useSession(sessionId);
+  const { participate, unparticipate } = useParticipation({
+    sessionId,
+    userId: user?.id,
+    refetch,
+  });
+
   if (!id || !user) {
     navigate('/sessions');
     return null;
   }
-
-  const { session, error, loading, deleteSession, refetch } = useSession(+id);
-  const { participate, unparticipate } = useParticipation({
-    sessionId: id!,
-    userId: user.id,
-    refetch,
-  });
 
   const handleDelete = (id: number) => {
     if (!window.confirm('Are you sure you want to delete this session?')) {
@@ -47,6 +50,18 @@ function SessionDetail() {
   }
 
   const isParticipating = session.users.includes(user.id);
+  const buttonLabel = isParticipating ? 'Leave Session' : 'Join Session';
+  const buttonAction = isParticipating ? unparticipate : participate;
+  const buttonColor = isParticipating
+    ? 'bg-red-600 hover:bg-red-700'
+    : 'bg-green-600 hover:bg-green-700';
+
+  const sessionDate = new Date(session.date).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -62,13 +77,8 @@ function SessionDetail() {
             </h2>
             <div className="space-y-2 text-gray-600">
               <p>
-                <strong>Date:</strong>{' '}
-                {new Date(session.date).toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                <strong>Date:</strong>
+                {sessionDate}
               </p>
               <p>
                 <strong>Teacher:</strong> {session.teacher.firstName}{' '}
@@ -106,23 +116,12 @@ function SessionDetail() {
                 </button>
               </>
             ) : (
-              <>
-                {isParticipating ? (
-                  <button
-                    onClick={unparticipate}
-                    className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
-                  >
-                    Leave Session
-                  </button>
-                ) : (
-                  <button
-                    onClick={participate}
-                    className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-                  >
-                    Join Session
-                  </button>
-                )}
-              </>
+              <button
+                onClick={buttonAction}
+                className={`${buttonColor} text-white px-6 py-2 rounded`}
+              >
+                {buttonLabel}
+              </button>
             )}
 
             <button

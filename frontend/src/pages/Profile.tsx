@@ -22,42 +22,46 @@ function Profile() {
   }, []);
 
   const fetchUserInfo = async (): Promise<void> => {
-    try {
-      setLoading(true);
-      const response = await api.get(`/user/${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUserInfo(response.data);
-    } catch (err: any) {
-      setError('Failed to load user information');
-      console.error(err);
-    } finally {
-      setLoading(false);
+    if (user) {
+      try {
+        setLoading(true);
+        const response = await api.get(`/user/${user.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserInfo(response.data);
+      } catch (err: any) {
+        setError('Failed to load user information');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const handleDeleteAccount = async (): Promise<void> => {
-    if (
-      !window.confirm(
-        'Are you sure you want to delete your account? This action cannot be undone.',
-      )
-    ) {
-      return;
-    }
+    if (user) {
+      if (
+        !window.confirm(
+          'Are you sure you want to delete your account? This action cannot be undone.',
+        )
+      ) {
+        return;
+      }
 
-    try {
-      await api.delete(`/user/${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      authService.logout();
-      navigate('/login');
-    } catch (err: unknown) {
-      alert('Failed to delete account');
-      console.error(err);
+      try {
+        await api.delete(`/user/${user.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        authService.logout();
+        navigate('/login');
+      } catch (err: unknown) {
+        alert('Failed to delete account');
+        console.error(err);
+      }
     }
   };
 
@@ -102,6 +106,26 @@ function Profile() {
     );
   }
 
+  const isAdmin = userInfo.admin;
+
+  const userCreationDate = userInfo.createdAt
+    ? new Date(userInfo.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : 'Pas de date de création de profile';
+
+  const userRole = isAdmin ? (
+    <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
+      Administrator
+    </span>
+  ) : (
+    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+      User
+    </span>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto px-4 max-w-2xl">
@@ -134,18 +158,8 @@ function Profile() {
               <label className="block text-gray-600 text-sm font-semibold mb-1">
                 Account Type
               </label>
-              <p className="text-lg text-gray-800">
-                {userInfo.admin ? (
-                  <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
-                    Administrator
-                  </span>
-                ) : (
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-                    User
-                  </span>
-                )}
-              </p>
-              {isDev && !userInfo.admin ? (
+              <p className="text-lg text-gray-800">{userRole}</p>
+              {isDev && isAdmin && (
                 <div className="mt-3">
                   <button
                     onClick={handlePromoteAdmin}
@@ -154,28 +168,20 @@ function Profile() {
                   >
                     {promoteLoading ? 'Promoting...' : 'Promote to Admin (Dev)'}
                   </button>
-                  {promoteError ? (
+                  {promoteError && (
                     <div className="mt-2 text-sm text-red-600">
                       {promoteError}
                     </div>
-                  ) : null}
+                  )}
                 </div>
-              ) : null}
+              )}
             </div>
 
             <div className="border-b pb-4">
               <label className="block text-gray-600 text-sm font-semibold mb-1">
                 Member Since
               </label>
-              <p className="text-lg text-gray-800">
-                {userInfo.createdAt
-                  ? new Date(userInfo.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })
-                  : 'Pas de date de création de profile'}
-              </p>
+              <p className="text-lg text-gray-800">{userCreationDate}</p>
             </div>
           </div>
 

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { authService } from '../services/auth.service';
 import { Session } from '../types';
 import { useSession } from '../hooks/useSession';
+import SessionCard from '../components/SessionCard';
 
 function Sessions() {
   const user = authService.getCurrentUser();
@@ -52,45 +53,12 @@ function Sessions() {
         {sessions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sessions.map((session: Session) => (
-              <div
+              <SessionCard
                 key={session.id}
-                className="bg-white rounded-lg shadow-md p-6"
-              >
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  {session.name}
-                </h3>
-                <p className="text-gray-600 mb-2">
-                  Date: {new Date(session.date).toLocaleDateString()}
-                </p>
-                <p className="text-gray-600 mb-2">
-                  Teacher: {session.teacher.firstName}{' '}
-                  {session.teacher.lastName}
-                </p>
-                <p className="text-gray-600 mb-4">
-                  Participants: {session.users.length}
-                </p>
-                <p className="text-gray-700 mb-4 line-clamp-3">
-                  {session.description}
-                </p>
-
-                <div className="flex space-x-2">
-                  <Link
-                    to={`/sessions/${session.id}`}
-                    className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded text-center hover:bg-indigo-700"
-                  >
-                    View Details
-                  </Link>
-
-                  {isAdmin && (
-                    <button
-                      onClick={() => handleDelete(session.id)}
-                      className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-              </div>
+                isAdmin={isAdmin}
+                session={session}
+                handleDelete={handleDelete}
+              />
             ))}
           </div>
         ) : (

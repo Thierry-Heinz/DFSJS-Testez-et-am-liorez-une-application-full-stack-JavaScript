@@ -7,7 +7,7 @@ import { deleteUser, updateUser } from './user.repository';
 
 const prisma = new PrismaClient();
 
-export async function getById(req: AuthRequest, res: Response) {
+export async function getUserById(req: AuthRequest, res: Response) {
   try {
     const { id } = req.params as { id: string };
 
@@ -35,7 +35,7 @@ export async function getById(req: AuthRequest, res: Response) {
   }
 }
 
-export async function deleteById(req: AuthRequest, res: Response) {
+export async function deleteUserById(req: AuthRequest, res: Response) {
   try {
     const { id } = req.params as { id: string };
 
@@ -70,7 +70,7 @@ export async function deleteById(req: AuthRequest, res: Response) {
   }
 }
 
-export async function promoteSelfToAdmin(req: AuthRequest, res: Response) {
+export async function promoteUserToAdmin(req: AuthRequest, res: Response) {
   try {
     const isDev = (process.env.NODE_ENV || 'development') === 'development';
     if (!isDev) {

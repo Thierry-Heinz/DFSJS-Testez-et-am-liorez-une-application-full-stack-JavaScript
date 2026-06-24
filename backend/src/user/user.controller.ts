@@ -1,9 +1,12 @@
 import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth.middleware';
-import { findById } from '../auth/auth.repository';
 import { UserDto } from './dto/user.dto';
-import { deleteUser, updateUser } from './user.repository';
+import {
+  deleteUserByIdService,
+  getUserByIdService,
+  updateUserByIdService,
+} from './user.service';
 
 const prisma = new PrismaClient();
 
@@ -20,7 +23,7 @@ export async function getUserById(req: AuthRequest, res: Response) {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
 
-    const existingUser = await findById(userId);
+    const existingUser = await getUserByIdService(userId);
 
     if (!existingUser) {
       return res.status(404).json({ message: 'User not found' });
@@ -29,7 +32,7 @@ export async function getUserById(req: AuthRequest, res: Response) {
     const response: UserDto = existingUser;
 
     return res.status(200).json(response);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get user error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -55,16 +58,16 @@ export async function deleteUserById(req: AuthRequest, res: Response) {
         .json({ message: 'You can only delete your own account' });
     }
 
-    const existingUser = await findById(userId);
+    const existingUser = await getUserByIdService(userId);
 
     if (!existingUser) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    await deleteUser(userId);
+    await deleteUserByIdService(userId);
 
     return res.status(200).json({ message: 'User deleted successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Delete user error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -82,7 +85,7 @@ export async function promoteUserToAdmin(req: AuthRequest, res: Response) {
     if (!req.userId) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
-    const existingUser = await findById(req.userId);
+    const existingUser = await getUserByIdService(req.userId);
 
     if (!existingUser) {
       return res.status(404).json({ message: 'User not found' });
@@ -92,12 +95,14 @@ export async function promoteUserToAdmin(req: AuthRequest, res: Response) {
       return res.status(200).json({ existingUser });
     }
 
-    const updatedUser = await updateUser(existingUser.id, { admin: true });
+    const updatedUser = await updateUserByIdService(existingUser.id, {
+      admin: true,
+    });
 
     return res.status(200).json({
       updatedUser,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Promote user error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }

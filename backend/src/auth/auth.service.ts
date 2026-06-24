@@ -1,10 +1,9 @@
-import { findByEmail } from './auth.repository';
-
 import * as bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt.util';
+import { findUserByEmail } from '../user/user.repository';
 
 export async function validateUser(email: string, password?: string) {
-  const existingUser = await findByEmail(email);
+  const existingUser = await findUserByEmail(email);
 
   if (!existingUser) {
     throw new Error('Invalid Credentials');

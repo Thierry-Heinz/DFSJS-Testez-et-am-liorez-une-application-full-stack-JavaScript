@@ -10,7 +10,7 @@ export async function findAllTeachers() {
   });
 }
 
-export async function findById(id: number) {
+export async function findTeacherById(id: number) {
   return await prisma.teacher.findUnique({
     where: { id },
   });

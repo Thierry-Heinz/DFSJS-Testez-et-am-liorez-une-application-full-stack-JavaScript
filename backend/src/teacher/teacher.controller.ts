@@ -1,13 +1,16 @@
 import { Response } from 'express';
-import { findAllTeachers, findById } from './teacher.repository';
 import { AuthRequest } from '../middleware/auth.middleware';
+import {
+  getallTeachersService,
+  getTeacherByIdService,
+} from './teacher.service';
 
 export async function getAllTeachers(res: Response) {
   try {
-    const teachers = findAllTeachers();
+    const teachers = getallTeachersService();
 
     return res.status(200).json(teachers);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get teachers error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
@@ -27,14 +30,14 @@ export async function getTeacherById(req: AuthRequest, res: Response) {
       return res.status(400).json({ message: 'Invalid teacher ID' });
     }
 
-    const teacher = await findById(teacherId);
+    const teacher = await getTeacherByIdService(teacherId);
 
     if (!teacher) {
       return res.status(404).json({ message: 'Teacher not found' });
     }
 
     return res.status(200).json(teacher);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get teacher error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }

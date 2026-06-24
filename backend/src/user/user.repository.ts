@@ -15,15 +15,27 @@ export async function createUser(userDto: CreateUserDto) {
   });
 }
 
-export async function updateUser(id: number, updateUserDto: UpdateUserDto) {
+export async function updateUserById(id: number, updateUserDto: UpdateUserDto) {
   return await prisma.user.update({
     where: { id: id },
     data: updateUserDto,
   });
 }
 
-export async function deleteUser(id: number) {
+export async function deleteUserById(id: number) {
   return await prisma.user.delete({
+    where: { id },
+  });
+}
+
+export async function findUserByEmail(email: string) {
+  return await prisma.user.findUnique({
+    where: { email },
+  });
+}
+
+export async function findUserById(id: number) {
+  return await prisma.user.findUnique({
     where: { id },
   });
 }

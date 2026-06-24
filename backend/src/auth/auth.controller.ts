@@ -7,6 +7,7 @@ import z from 'zod';
 import { createUser } from '../user/user.repository';
 import { generateToken } from '../utils/jwt.util';
 import { UserResponseDto } from '../user/dto/user.dto';
+import { createUserService } from '../user/user.service';
 
 export async function login(req: Request, res: Response) {
   try {
@@ -38,7 +39,7 @@ export async function register(req: Request, res: Response) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await createUser({
+    const user = await createUserService({
       email,
       password: hashedPassword,
       firstName,
@@ -51,7 +52,7 @@ export async function register(req: Request, res: Response) {
     const response: UserResponseDto = { ...user, token };
 
     return res.status(201).json(response);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Register error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }

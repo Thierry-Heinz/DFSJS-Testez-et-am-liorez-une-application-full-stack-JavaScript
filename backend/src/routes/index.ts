@@ -16,6 +16,7 @@ import {
   participate,
   unparticipate,
 } from '../session/session.controller';
+import { asyncHandler } from '../middleware/asyncHandler';
 
 const router = Router();
 
@@ -24,12 +25,10 @@ router.post('/api/auth/login', (req, res) => login(req, res));
 router.post('/api/auth/register', (req, res) => register(req, res));
 
 // Session routes (protected)
-router.get('/api/session', authMiddleware, (req, res) =>
-  getAllSessions(req, res),
-);
-router.get('/api/session/:id', authMiddleware, (req, res) =>
-  getSessionById(req, res),
-);
+router.get('/api/session', authMiddleware, asyncHandler(getAllSessions));
+
+router.get('/api/session/:id', authMiddleware, asyncHandler(getSessionById));
+
 router.post('/api/session', authMiddleware, (req, res) =>
   createSession(req, res),
 );

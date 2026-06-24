@@ -4,41 +4,33 @@ import {
   getallTeachersService,
   getTeacherByIdService,
 } from './teacher.service';
+import { AppError } from '../errors/AppError';
+import { ErrorMessage } from '../errors/errorMessages';
 
 export async function getAllTeachers(res: Response) {
-  try {
-    const teachers = await getallTeachersService();
+  const teachers = await getallTeachersService();
 
-    return res.status(200).json(teachers);
-  } catch (error: unknown) {
-    console.error('Get teachers error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
+  res.status(200).json(teachers);
 }
 
 export async function getTeacherById(req: AuthRequest, res: Response) {
-  try {
-    const { id } = req.params as { id: string };
+  const { id } = req.params as { id: string };
 
-    if (!id) {
-      return res.status(400).json({ message: 'Teacher ID is required' });
-    }
-
-    const teacherId = parseInt(id);
-
-    if (isNaN(teacherId)) {
-      return res.status(400).json({ message: 'Invalid teacher ID' });
-    }
-
-    const teacher = await getTeacherByIdService(teacherId);
-
-    if (!teacher) {
-      return res.status(404).json({ message: 'Teacher not found' });
-    }
-
-    return res.status(200).json(teacher);
-  } catch (error: unknown) {
-    console.error('Get teacher error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  if (!id) {
+    throw new AppError(ErrorMessage.TEACHER_ID_REQUIRED);
   }
+
+  const teacherId = parseInt(id);
+
+  if (isNaN(teacherId)) {
+    throw new AppError(ErrorMessage.INVALID_TEACHER_ID);
+  }
+
+  const teacher = await getTeacherByIdService(teacherId);
+
+  if (!teacher) {
+    throw new AppError(ErrorMessage.TEACHER_NOT_FOUND);
+  }
+
+  res.status(200).json(teacher);
 }

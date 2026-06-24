@@ -16,260 +16,228 @@ import {
   deleteSessionParticipationByIdService,
   getSessionParticipationById,
 } from '../sessionParticipation/sessionParticipation.service';
-
-const prisma = new PrismaClient();
+import { AppError } from '../errors/AppError';
+import { ErrorMessage } from '../errors/errorMessages';
+import { SuccessMessage } from '../utils/successMessages';
 
 export async function getAllSessions(req: AuthRequest, res: Response) {
-  try {
-    const sessions = await getAllSessionsService();
+  const sessions = await getAllSessionsService();
 
-    return res.status(200).json(sessions);
-  } catch (error: unknown) {
-    console.error('Get sessions error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
+  res.status(200).json(sessions);
 }
 
 export async function getSessionById(req: AuthRequest, res: Response) {
-  try {
-    const { id } = req.params as { id: string };
+  const { id } = req.params as { id: string };
 
-    if (!id) {
-      return res.status(400).json({ message: 'Session ID is required' });
-    }
-
-    const sessionId = parseInt(id);
-
-    if (isNaN(sessionId)) {
-      return res.status(400).json({ message: 'Invalid session ID' });
-    }
-
-    const session = await getSessionByIdService(sessionId);
-    if (!session) {
-      return res.status(404).json({ message: 'Session not found' });
-    }
-
-    return res.status(200).json(session);
-  } catch (error: unknown) {
-    console.error('Get session error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  if (!id) {
+    throw new AppError(ErrorMessage.SESSION_ID_REQUIRED);
   }
+
+  const sessionId = parseInt(id);
+
+  if (isNaN(sessionId)) {
+    throw new AppError(ErrorMessage.INVALID_SESSION_ID);
+  }
+
+  const session = await getSessionByIdService(sessionId);
+  if (!session) {
+    throw new AppError(ErrorMessage.SESSION_NOT_FOUND);
+  }
+
+  res.status(200).json(session);
 }
 
 export async function createSession(req: AuthRequest, res: Response) {
-  try {
-    const { name, date, description, teacherId } = req.body;
+  const { name, date, description, teacherId } = req.body;
 
-    if (!name) {
-      return res.status(400).json({ message: 'Name is required' });
-    }
-    if (!date) {
-      return res.status(400).json({ message: 'Date is required' });
-    }
-    if (!description) {
-      return res.status(400).json({ message: 'Description is required' });
-    }
-    if (!teacherId) {
-      return res.status(400).json({ message: 'Teacher ID is required' });
-    }
-    if (!req.userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-    if (isNaN(req.userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-
-    const user = await getUserByIdService(req.userId);
-
-    if (!user || !user.admin) {
-      return res.status(403).json({ message: 'Admin access required' });
-    }
-
-    const teacher = await getTeacherByIdService(teacherId);
-
-    if (!teacher) {
-      return res.status(404).json({ message: 'Teacher not found' });
-    }
-    const session = createSessionService({
-      name,
-      date: new Date(date),
-      description,
-      teacherId,
-    });
-
-    return res.status(201).json(session);
-  } catch (error: unknown) {
-    console.error('Create session error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  if (!name) {
+    throw new AppError(ErrorMessage.NAME_REQUIRED);
   }
+  if (!date) {
+    throw new AppError(ErrorMessage.DATE_REQUIRED);
+  }
+  if (!description) {
+    throw new AppError(ErrorMessage.DESCRIPTION_REQUIRED);
+  }
+  if (!teacherId) {
+    throw new AppError(ErrorMessage.TEACHER_ID_REQUIRED);
+  }
+  if (!req.userId) {
+    throw new AppError(ErrorMessage.UNAUTHORIZED);
+  }
+  if (isNaN(req.userId)) {
+    throw new AppError(ErrorMessage.USER_ID_REQUIRED);
+  }
+
+  const user = await getUserByIdService(req.userId);
+
+  if (!user || !user.admin) {
+    throw new AppError(ErrorMessage.ADMIN_REQUIRED);
+  }
+
+  const teacher = await getTeacherByIdService(teacherId);
+
+  if (!teacher) {
+    throw new AppError(ErrorMessage.TEACHER_NOT_FOUND);
+  }
+  const session = await createSessionService({
+    name,
+    date: new Date(date),
+    description,
+    teacherId,
+  });
+
+  res.status(201).json(session);
 }
 
 export async function updateSession(req: AuthRequest, res: Response) {
-  try {
-    const { id } = req.params as { id: string };
-    const { name, date, description, teacherId } = req.body;
+  const { id } = req.params as { id: string };
+  const { name, date, description, teacherId } = req.body;
 
-    if (!id) {
-      return res.status(400).json({ message: 'Session ID is required' });
-    }
-
-    const sessionId = parseInt(id);
-
-    if (isNaN(sessionId)) {
-      return res.status(400).json({ message: 'Invalid session ID' });
-    }
-    if (!req.userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-    const user = await getUserByIdService(req.userId);
-
-    if (!user || !user.admin) {
-      return res.status(403).json({ message: 'Admin access required' });
-    }
-
-    const existingSession = await getSessionByIdService(sessionId);
-
-    if (!existingSession) {
-      return res.status(404).json({ message: 'Session not found' });
-    }
-
-    const updatedData = { name, date, description, teacherId };
-
-    const updatedSession = await updateSessionService(sessionId, updatedData);
-
-    console.log('updated session', updatedSession);
-
-    return res.status(200).json(updatedSession);
-  } catch (error: unknown) {
-    console.error('Update session error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  if (!id) {
+    throw new AppError(ErrorMessage.SESSION_ID_REQUIRED);
   }
+
+  const sessionId = parseInt(id);
+
+  if (isNaN(sessionId)) {
+    throw new AppError(ErrorMessage.INVALID_SESSION_ID);
+  }
+  if (!req.userId) {
+    throw new AppError(ErrorMessage.UNAUTHORIZED);
+  }
+  const user = await getUserByIdService(req.userId);
+
+  if (!user || !user.admin) {
+    throw new AppError(ErrorMessage.ADMIN_REQUIRED);
+  }
+
+  const existingSession = await getSessionByIdService(sessionId);
+
+  if (!existingSession) {
+    throw new AppError(ErrorMessage.SESSION_NOT_FOUND);
+  }
+
+  const existingTeacher = getTeacherByIdService(teacherId);
+  if (!existingTeacher) {
+    throw new AppError(ErrorMessage.INVALID_TEACHER_ID);
+  }
+
+  const updatedData = { name, date, description, teacherId };
+
+  const updatedSession = await updateSessionService(sessionId, updatedData);
+
+  res.status(200).json(updatedSession);
 }
 
 export async function deleteSession(req: AuthRequest, res: Response) {
-  try {
-    const { id } = req.params as { id: string };
+  const { id } = req.params as { id: string };
 
-    if (!id) {
-      return res.status(400).json({ message: 'Session ID is required' });
-    }
-
-    const sessionId = parseInt(id);
-
-    if (isNaN(sessionId)) {
-      return res.status(400).json({ message: 'Invalid session ID' });
-    }
-
-    if (req.userId) {
-      const existingUser = await getUserByIdService(req.userId);
-      if (!existingUser || !existingUser.admin) {
-        return res.status(403).json({ message: 'Admin access required' });
-      }
-    }
-
-    const existingSession = await getSessionByIdService(sessionId);
-
-    if (!existingSession) {
-      return res.status(404).json({ message: 'Session not found' });
-    }
-
-    await deleteSessionService(sessionId);
-
-    return res.status(200).json({ message: 'Session deleted successfully' });
-  } catch (error: unknown) {
-    console.error('Delete session error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  if (!id) {
+    throw new AppError(ErrorMessage.SESSION_ID_REQUIRED);
   }
+
+  const sessionId = parseInt(id);
+
+  if (isNaN(sessionId)) {
+    throw new AppError(ErrorMessage.INVALID_SESSION_ID);
+  }
+
+  if (!req.userId) {
+    throw new AppError(ErrorMessage.UNAUTHORIZED);
+  }
+  const existingUser = await getUserByIdService(req.userId);
+  if (!existingUser || !existingUser.admin) {
+    throw new AppError(ErrorMessage.ADMIN_REQUIRED);
+  }
+
+  const existingSession = await getSessionByIdService(sessionId);
+
+  if (!existingSession) {
+    throw new AppError(ErrorMessage.SESSION_NOT_FOUND);
+  }
+
+  await deleteSessionService(sessionId);
+
+  res.status(200).json({ message: SuccessMessage.SESSION_DELETED });
 }
 
 export async function participate(req: AuthRequest, res: Response) {
-  try {
-    const { id, userId } = req.params as { id: string; userId: string };
+  const { id, userId } = req.params as { id: string; userId: string };
 
-    if (!id) {
-      return res.status(400).json({ message: 'Session ID is required' });
-    }
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
-
-    const sessionId = parseInt(id);
-    const participantUserId = parseInt(userId);
-
-    if (isNaN(sessionId)) {
-      return res.status(400).json({ message: 'Invalid session ID' });
-    }
-    if (isNaN(participantUserId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-
-    const session = await getSessionByIdService(sessionId);
-
-    if (!session) {
-      return res.status(404).json({ message: 'Session not found' });
-    }
-
-    const user = await getUserByIdService(participantUserId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const existingParticipation = await getSessionParticipationById(
-      session.id,
-      user.id,
-    );
-
-    if (existingParticipation) {
-      return res
-        .status(400)
-        .json({ message: 'User already participating in this session' });
-    }
-
-    await createSessionParticipationService(session.id, user.id);
-
-    return res.status(200).json({ message: 'Successfully joined the session' });
-  } catch (error: unknown) {
-    console.error('Participate error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  if (!id) {
+    throw new AppError(ErrorMessage.SESSION_ID_REQUIRED);
   }
+  if (!userId) {
+    throw new AppError(ErrorMessage.USER_ID_REQUIRED);
+  }
+
+  const sessionId = parseInt(id);
+  const participantUserId = parseInt(userId);
+
+  if (isNaN(sessionId)) {
+    throw new AppError(ErrorMessage.INVALID_SESSION_ID);
+  }
+  if (isNaN(participantUserId)) {
+    throw new AppError(ErrorMessage.INVALID_USER_ID);
+  }
+
+  const session = await getSessionByIdService(sessionId);
+
+  if (!session) {
+    throw new AppError(ErrorMessage.SESSION_NOT_FOUND);
+  }
+
+  const user = await getUserByIdService(participantUserId);
+
+  if (!user) {
+    throw new AppError(ErrorMessage.USER_NOT_FOUND);
+  }
+
+  const existingParticipation = await getSessionParticipationById(
+    session.id,
+    user.id,
+  );
+
+  if (existingParticipation) {
+    throw new AppError(ErrorMessage.ALREADY_PARTICIPATING);
+  }
+
+  await createSessionParticipationService(session.id, user.id);
+
+  return res.status(200).json({ message: SuccessMessage.SESSION_JOINED });
 }
 
 export async function unparticipate(req: AuthRequest, res: Response) {
-  try {
-    const { id, userId } = req.params as { id: string; userId: string };
+  const { id, userId } = req.params as { id: string; userId: string };
 
-    if (!id) {
-      return res.status(400).json({ message: 'Session ID is required' });
-    }
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
-
-    const sessionId = parseInt(id);
-    const participantUserId = parseInt(userId);
-
-    if (isNaN(sessionId)) {
-      return res.status(400).json({ message: 'Invalid session ID' });
-    }
-    if (isNaN(participantUserId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-
-    const participation = await getSessionParticipationById(
-      sessionId,
-      participantUserId,
-    );
-
-    if (!participation) {
-      return res.status(404).json({ message: 'Participation not found' });
-    }
-
-    await deleteSessionParticipationByIdService(sessionId, participantUserId);
-
-    return res.status(200).json({ message: 'Successfully left the session' });
-  } catch (error: unknown) {
-    console.error('Unparticipate error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  if (!id) {
+    throw new AppError(ErrorMessage.SESSION_ID_REQUIRED);
   }
+  if (!userId) {
+    throw new AppError(ErrorMessage.USER_ID_REQUIRED);
+  }
+
+  const sessionId = parseInt(id);
+  const participantUserId = parseInt(userId);
+
+  if (isNaN(sessionId)) {
+    throw new AppError(ErrorMessage.INVALID_SESSION_ID);
+  }
+  if (isNaN(participantUserId)) {
+    throw new AppError(ErrorMessage.INVALID_USER_ID);
+  }
+
+  const participation = await getSessionParticipationById(
+    sessionId,
+    participantUserId,
+  );
+
+  if (!participation) {
+    throw new AppError(ErrorMessage.PARTICIPATION_NOT_FOUND);
+  }
+
+  await deleteSessionParticipationByIdService(sessionId, participantUserId);
+
+  res.status(200).json({ message: SuccessMessage.SESSION_LEFT });
 }

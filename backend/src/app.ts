@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import routes from './routes';
+import errorHandler from './middleware/errorHandler';
 
 dotenv.config();
 
@@ -21,10 +22,12 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Yoga Studio API is running' });
 });
 
+// Error Handler MiddleWare
+app.use(errorHandler);
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
-
 export default app;

@@ -1,51 +1,39 @@
-import { string } from 'zod';
 import { getTeacherByIdService } from '../teacher/teacher.service';
-import {
-  CreateSessionDto,
-  SessionDto,
-  UpdateSessionDto,
-} from './dto/session.dto';
+import { CreateSessionDto, UpdateSessionDto } from './dto/session.dto';
 import {
   createSession,
   deleteSessionById,
   findAllSessions,
   findSessionById,
+  updateSession,
 } from './session.repository';
+import { sessionAdapter } from './session.utils';
 
 export async function createSessionService(createSessionDto: CreateSessionDto) {
   return await createSession(createSessionDto);
 }
 
-export async function getAllSessions(): Promise<SessionDto[]> {
-  return await findAllSessions();
+export async function getAllSessionsService() {
+  const sessions = await findAllSessions();
+
+  return sessions.map(sessionAdapter);
 }
 
-export async function getSessionByIdService(
-  id: number,
-): Promise<SessionDto | null> {
-  return await findSessionById(id);
+export async function getSessionByIdService(id: number) {
+  const session = await findSessionById(id);
+  if (session) {
+    return sessionAdapter(session);
+  }
 }
 
 export async function updateSessionService(
+  sessionId: number,
   updateSessionDto: UpdateSessionDto,
-  {
-    name,
-    date,
-    description,
-    teacherId,
-  }: { name: string; date: Date; description: string; teacherId: number },
 ) {
-  if (name) updateSessionDto.name = name;
-  if (date) updateSessionDto.date = new Date(date);
-  if (description) updateSessionDto.description = description;
-  if (teacherId) {
-    const teacher = await getTeacherByIdService(teacherId);
+  if (updateSessionDto.date)
+    updateSessionDto.date = new Date(updateSessionDto.date);
 
-    if (teacher) {
-      updateSessionDto.teacherId = teacherId;
-    }
-  }
-  return updateSessionDto;
+  return await updateSession(sessionId, updateSessionDto);
 }
 
 export async function deleteSessionService(id: number) {

@@ -100,7 +100,7 @@ export async function promoteUserToAdmin(req: AuthRequest, res: Response) {
     });
 
     return res.status(200).json({
-      updatedUser,
+      ...updatedUser,
     });
   } catch (error: unknown) {
     console.error('Promote user error:', error);

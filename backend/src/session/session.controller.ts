@@ -5,7 +5,7 @@ import { AuthRequest } from '../middleware/auth.middleware';
 import {
   createSessionService,
   deleteSessionService,
-  getAllSessions,
+  getAllSessionsService,
   getSessionByIdService,
   updateSessionService,
 } from './session.service';
@@ -19,9 +19,9 @@ import {
 
 const prisma = new PrismaClient();
 
-export async function getAll(res: Response) {
+export async function getAllSessions(req: AuthRequest, res: Response) {
   try {
-    const sessions = getAllSessions();
+    const sessions = await getAllSessionsService();
 
     return res.status(200).json(sessions);
   } catch (error: unknown) {
@@ -133,11 +133,13 @@ export async function updateSession(req: AuthRequest, res: Response) {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    const updateData = { name, date, description, teacherId };
+    const updatedData = { name, date, description, teacherId };
 
-    const session = await updateSessionService(existingSession, updateData);
+    const updatedSession = await updateSessionService(sessionId, updatedData);
 
-    return res.status(200).json(session);
+    console.log('updated session', updatedSession);
+
+    return res.status(200).json(updatedSession);
   } catch (error: unknown) {
     console.error('Update session error:', error);
     return res.status(500).json({ message: 'Internal server error' });

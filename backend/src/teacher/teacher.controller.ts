@@ -7,7 +7,7 @@ import {
 
 export async function getAllTeachers(res: Response) {
   try {
-    const teachers = getallTeachersService();
+    const teachers = await getallTeachersService();
 
     return res.status(200).json(teachers);
   } catch (error: unknown) {

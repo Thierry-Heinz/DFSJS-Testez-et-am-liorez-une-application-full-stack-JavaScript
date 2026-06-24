@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { SessionController } from '../session/session.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { login, register } from '../auth/auth.controller';
 import {
@@ -8,11 +7,17 @@ import {
   promoteUserToAdmin,
 } from '../user/user.controller';
 import { getAllTeachers, getTeacherById } from '../teacher/teacher.controller';
+import {
+  createSession,
+  getAllSessions,
+  getSessionById,
+  updateSession,
+  deleteSession,
+  participate,
+  unparticipate,
+} from '../session/session.controller';
 
 const router = Router();
-
-// Controllers
-const sessionController = new SessionController();
 
 // Auth routes (public)
 router.post('/api/auth/login', (req, res) => login(req, res));
@@ -20,29 +25,29 @@ router.post('/api/auth/register', (req, res) => register(req, res));
 
 // Session routes (protected)
 router.get('/api/session', authMiddleware, (req, res) =>
-  sessionController.getAll(req, res),
+  getAllSessions(req, res),
 );
 router.get('/api/session/:id', authMiddleware, (req, res) =>
-  sessionController.getById(req, res),
+  getSessionById(req, res),
 );
 router.post('/api/session', authMiddleware, (req, res) =>
-  sessionController.create(req, res),
+  createSession(req, res),
 );
 router.put('/api/session/:id', authMiddleware, (req, res) =>
-  sessionController.update(req, res),
+  updateSession(req, res),
 );
 router.delete('/api/session/:id', authMiddleware, (req, res) =>
-  sessionController.delete(req, res),
+  deleteSession(req, res),
 );
 router.post(
   '/api/session/:id/participate/:userId',
   authMiddleware,
-  (req, res) => sessionController.participate(req, res),
+  (req, res) => participate(req, res),
 );
 router.delete(
   '/api/session/:id/participate/:userId',
   authMiddleware,
-  (req, res) => sessionController.unparticipate(req, res),
+  (req, res) => unparticipate(req, res),
 );
 
 // Teacher routes (protected)

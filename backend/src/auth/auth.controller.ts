@@ -4,7 +4,6 @@ import { LoginSchema, RegisterSchema } from './dto/auth.dto';
 
 import * as bcrypt from 'bcrypt';
 import z from 'zod';
-import { createUser } from '../user/user.repository';
 import { generateToken } from '../utils/jwt.util';
 import { UserResponseDto } from '../user/dto/user.dto';
 import { createUserService } from '../user/user.service';
@@ -15,6 +14,9 @@ export async function login(req: Request, res: Response) {
     LoginSchema.parse({ email, password });
 
     const existingUser = await validateUser(email, password);
+    if (!existingUser) {
+      throw new Error('Invalid Credentials');
+    }
 
     return res.status(200).json(existingUser);
   } catch (error: unknown) {

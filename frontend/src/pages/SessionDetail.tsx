@@ -28,7 +28,8 @@ function SessionDetail() {
     if (!window.confirm('Are you sure you want to delete this session?')) {
       return;
     }
-    deleteSession(id);
+
+    deleteSession(id, () => navigate('/sessions'));
   };
 
   if (loading) {

@@ -43,15 +43,22 @@ export const useSession = (id?: number | undefined) => {
     }
   };
 
-  const deleteSession = async (sessionId: number): Promise<void> => {
+  const deleteSession = async (
+    sessionId: number,
+    callback?: () => void,
+  ): Promise<void> => {
     try {
       await api.delete(`/session/${sessionId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      controller.current = new AbortController();
-      fetchSessions(controller.current.signal);
+      if (!callback) {
+        controller.current = new AbortController();
+        fetchSessions(controller.current.signal);
+      } else {
+        callback();
+      }
     } catch (err: unknown) {
       console.error(err);
     }

@@ -2,6 +2,7 @@ import { CreateUserDto, UserDto } from './dto/user.dto';
 import {
   createUser,
   deleteUserById,
+  findUserByEmail,
   findUserById,
   updateUserById,
 } from './user.repository';
@@ -12,6 +13,11 @@ export async function createUserService(createUserDto: CreateUserDto) {
 
 export async function getUserByIdService(id: number): Promise<UserDto | null> {
   return await findUserById(id);
+}
+export async function getUserByEMailService(
+  email: string,
+): Promise<UserDto | null> {
+  return await findUserByEmail(email);
 }
 
 export async function updateUserByIdService(

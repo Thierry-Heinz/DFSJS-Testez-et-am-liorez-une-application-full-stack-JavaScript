@@ -1,4 +1,3 @@
-import { getTeacherByIdService } from '../teacher/teacher.service';
 import { CreateSessionDto, UpdateSessionDto } from './dto/session.dto';
 import {
   createSession,

@@ -1,109 +1,85 @@
 import { Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth.middleware';
-import { UserDto } from './dto/user.dto';
 import {
   deleteUserByIdService,
   getUserByIdService,
   updateUserByIdService,
 } from './user.service';
-
-const prisma = new PrismaClient();
+import { AppError } from '../errors/AppError';
+import { ErrorMessage } from '../errors/errorMessages';
+import { SuccessMessage } from '../utils/successMessages';
 
 export async function getUserById(req: AuthRequest, res: Response) {
-  try {
-    const { id } = req.params as { id: string };
-
-    const userId = parseInt(id);
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
-
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-
-    const existingUser = await getUserByIdService(userId);
-
-    if (!existingUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const response: UserDto = existingUser;
-
-    return res.status(200).json(response);
-  } catch (error: unknown) {
-    console.error('Get user error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  const { id } = req.params as { id: string };
+  if (!id) {
+    throw new AppError(ErrorMessage.USER_ID_REQUIRED);
   }
+
+  const userId = parseInt(id);
+
+  if (isNaN(userId)) {
+    throw new AppError(ErrorMessage.INVALID_USER_ID);
+  }
+
+  const existingUser = await getUserByIdService(userId);
+
+  if (!existingUser) {
+    throw new AppError(ErrorMessage.USER_NOT_FOUND);
+  }
+
+  res.status(200).json(existingUser);
 }
 
 export async function deleteUserById(req: AuthRequest, res: Response) {
-  try {
-    const { id } = req.params as { id: string };
+  const { id } = req.params as { id: string };
 
-    if (!id) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
-
-    const userId = parseInt(id);
-
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-
-    if (req.userId !== userId) {
-      return res
-        .status(403)
-        .json({ message: 'You can only delete your own account' });
-    }
-
-    const existingUser = await getUserByIdService(userId);
-
-    if (!existingUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    await deleteUserByIdService(userId);
-
-    return res.status(200).json({ message: 'User deleted successfully' });
-  } catch (error: unknown) {
-    console.error('Delete user error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  if (!id) {
+    throw new AppError(ErrorMessage.USER_ID_REQUIRED);
   }
+
+  const userId = parseInt(id);
+
+  if (isNaN(userId)) {
+    throw new AppError(ErrorMessage.INVALID_USER_ID);
+  }
+  const existingUser = await getUserByIdService(userId);
+
+  if (!existingUser) {
+    throw new AppError(ErrorMessage.USER_NOT_FOUND);
+  }
+  if (req.userId !== userId) {
+    throw new AppError(ErrorMessage.DELETE_OWN_ACCOUNT_ONLY);
+  }
+
+  await deleteUserByIdService(userId);
+  res.status(200).json({ message: SuccessMessage.USER_DELETED });
 }
 
 export async function promoteUserToAdmin(req: AuthRequest, res: Response) {
-  try {
-    const isDev = (process.env.NODE_ENV || 'development') === 'development';
-    if (!isDev) {
-      return res.status(403).json({
-        message: 'Admin self-promotion is only available in development',
-      });
-    }
+  const isDev = (process.env.NODE_ENV || 'development') === 'development';
 
-    if (!req.userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-    const existingUser = await getUserByIdService(req.userId);
-
-    if (!existingUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    if (existingUser.admin) {
-      return res.status(200).json({ existingUser });
-    }
-
-    const updatedUser = await updateUserByIdService(existingUser.id, {
-      admin: true,
-    });
-
-    return res.status(200).json({
-      ...updatedUser,
-    });
-  } catch (error: unknown) {
-    console.error('Promote user error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+  if (!req.userId) {
+    throw new AppError(ErrorMessage.UNAUTHORIZED);
   }
+  if (!isDev) {
+    throw new AppError(ErrorMessage.ADMIN_SELF_PROMOTION_DEV_ONLY);
+  }
+
+  const existingUser = await getUserByIdService(req.userId);
+
+  if (!existingUser) {
+    throw new AppError(ErrorMessage.USER_NOT_FOUND);
+  }
+
+  if (existingUser.admin) {
+    return res.status(200).json(existingUser);
+  }
+
+  const updatedUser = await updateUserByIdService(existingUser.id, {
+    admin: true,
+  });
+
+  return res.status(200).json({
+    ...updatedUser,
+  });
 }

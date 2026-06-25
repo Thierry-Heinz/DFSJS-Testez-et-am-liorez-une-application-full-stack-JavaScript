@@ -14,9 +14,7 @@ export async function createUserService(createUserDto: CreateUserDto) {
 export async function getUserByIdService(id: number): Promise<UserDto | null> {
   return await findUserById(id);
 }
-export async function getUserByEMailService(
-  email: string,
-): Promise<UserDto | null> {
+export async function getUserByEMailService(email: string) {
   return await findUserByEmail(email);
 }
 

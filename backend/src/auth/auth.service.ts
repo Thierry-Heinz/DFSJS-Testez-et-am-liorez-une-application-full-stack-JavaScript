@@ -1,6 +1,5 @@
 import * as bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt.util';
-import { findUserByEmail } from '../user/user.repository';
 import { getUserByEMailService } from '../user/user.service';
 
 export async function validateUser(email: string, password?: string) {

@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import Login from './Login';
 import { MemoryRouter } from 'react-router-dom';
 import { authService } from '../services/auth.service';
+import Register from './Register';
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -10,11 +10,11 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-describe('Test ==> Login', () => {
+describe('Test ==> Register', () => {
   beforeEach(() => {
     render(
       <MemoryRouter>
-        <Login />
+        <Register />
       </MemoryRouter>,
     );
   });
@@ -23,32 +23,41 @@ describe('Test ==> Login', () => {
     vi.restoreAllMocks();
   });
 
-  it('mount Login page', () => {
-    screen.getByText('Login to Yoga Studio');
+  it('mount Register page', () => {
+    screen.getByText('Register for Yoga Studio');
+    screen.getByLabelText('First Name');
+    screen.getByLabelText('Last Name');
     screen.getByLabelText('Email');
     screen.getByLabelText('Password');
-    screen.getByRole('button', { name: 'Login' });
-    screen.getByText('Register here');
+    screen.getByRole('button', { name: 'Register' });
+    screen.getByText('Login here');
   });
 
-  it('displays error when login fails', async () => {
-    vi.spyOn(authService, 'login').mockRejectedValue(
-      new Error('Invalid credentials'),
+  it('displays error when register fails', async () => {
+    const errorMessage = 'Email already exists';
+    vi.spyOn(authService, 'register').mockRejectedValue(
+      new Error(errorMessage),
     );
 
+    fireEvent.change(screen.getByLabelText('First Name'), {
+      target: { value: 'user' },
+    });
+    fireEvent.change(screen.getByLabelText('Last Name'), {
+      target: { value: 'test' },
+    });
     fireEvent.change(screen.getByLabelText('Email'), {
       target: { value: 'test@test.com' },
     });
     fireEvent.change(screen.getByLabelText('Password'), {
       target: { value: 'wrongpassword' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Register' }));
 
-    expect(await screen.findByText('Invalid credentials')).toBeInTheDocument();
+    expect(await screen.findByText(errorMessage)).toBeInTheDocument();
   });
 
-  it('navigates to /sessions on successful login', async () => {
-    vi.spyOn(authService, 'login').mockResolvedValue({
+  it('navigates to /sessions on successful register', async () => {
+    vi.spyOn(authService, 'register').mockResolvedValue({
       id: 1,
       email: 'test@test.com',
       firstName: 'test',
@@ -56,13 +65,19 @@ describe('Test ==> Login', () => {
       admin: false,
     });
 
+    fireEvent.change(screen.getByLabelText('First Name'), {
+      target: { value: 'user' },
+    });
+    fireEvent.change(screen.getByLabelText('Last Name'), {
+      target: { value: 'test' },
+    });
     fireEvent.change(screen.getByLabelText('Email'), {
       target: { value: 'test@test.com' },
     });
     fireEvent.change(screen.getByLabelText('Password'), {
       target: { value: 'password123' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Register' }));
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/sessions');

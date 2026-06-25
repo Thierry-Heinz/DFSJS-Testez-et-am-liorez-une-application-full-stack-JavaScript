@@ -25,6 +25,8 @@ export async function validateUser(email: string, password?: string) {
       firstName: existingUser.firstName,
       lastName: existingUser.lastName,
       admin: existingUser.admin,
+      createdAt: existingUser.createdAt,
+      updatedAt: existingUser.updatedAt,
       token,
     };
   }

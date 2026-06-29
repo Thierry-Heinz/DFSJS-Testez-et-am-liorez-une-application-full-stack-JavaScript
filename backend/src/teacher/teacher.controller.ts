@@ -7,7 +7,7 @@ import {
 import { AppError } from '../errors/AppError';
 import { ErrorMessage } from '../errors/errorMessages';
 
-export async function getAllTeachers(res: Response) {
+export async function getAllTeachers(req: AuthRequest, res: Response) {
   const teachers = await getallTeachersService();
   res.status(200).json(teachers);
 }

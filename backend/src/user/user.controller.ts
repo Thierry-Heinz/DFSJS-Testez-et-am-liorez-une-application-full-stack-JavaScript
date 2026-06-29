@@ -72,14 +72,14 @@ export async function promoteUserToAdmin(req: AuthRequest, res: Response) {
   }
 
   if (existingUser.admin) {
-    return res.status(200).json(existingUser);
+    res.status(200).json(existingUser);
   }
 
   const updatedUser = await updateUserByIdService(existingUser.id, {
     admin: true,
   });
 
-  return res.status(200).json({
+  res.status(200).json({
     ...updatedUser,
   });
 }

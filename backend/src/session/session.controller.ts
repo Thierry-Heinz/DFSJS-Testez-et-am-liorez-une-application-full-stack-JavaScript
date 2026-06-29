@@ -205,7 +205,7 @@ export async function participate(req: AuthRequest, res: Response) {
 
   await createSessionParticipationService(session.id, user.id);
 
-  return res.status(200).json({ message: SuccessMessage.SESSION_JOINED });
+  res.status(200).json({ message: SuccessMessage.SESSION_JOINED });
 }
 
 export async function unparticipate(req: AuthRequest, res: Response) {

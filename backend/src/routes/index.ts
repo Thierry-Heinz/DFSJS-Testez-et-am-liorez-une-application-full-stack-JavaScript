@@ -29,41 +29,31 @@ router.get('/api/session', authMiddleware, asyncHandler(getAllSessions));
 
 router.get('/api/session/:id', authMiddleware, asyncHandler(getSessionById));
 
-router.post('/api/session', authMiddleware, (req, res) =>
-  createSession(req, res),
-);
-router.put('/api/session/:id', authMiddleware, (req, res) =>
-  updateSession(req, res),
-);
-router.delete('/api/session/:id', authMiddleware, (req, res) =>
-  deleteSession(req, res),
-);
+router.post('/api/session', authMiddleware, asyncHandler(createSession));
+router.put('/api/session/:id', authMiddleware, asyncHandler(updateSession));
+router.delete('/api/session/:id', authMiddleware, asyncHandler(deleteSession));
 router.post(
   '/api/session/:id/participate/:userId',
   authMiddleware,
-  (req, res) => participate(req, res),
+  asyncHandler(participate),
 );
 router.delete(
   '/api/session/:id/participate/:userId',
   authMiddleware,
-  (req, res) => unparticipate(req, res),
+  asyncHandler(unparticipate),
 );
 
 // Teacher routes (protected)
-router.get('/api/teacher', authMiddleware, (req, res) => getAllTeachers(res));
-router.get('/api/teacher/:id', authMiddleware, (req, res) =>
-  getTeacherById(req, res),
-);
+router.get('/api/teacher', authMiddleware, asyncHandler(getAllTeachers));
+router.get('/api/teacher/:id', authMiddleware, asyncHandler(getTeacherById));
 
 // User routes (protected)
-router.get('/api/user/:id', authMiddleware, (req, res) =>
-  getUserById(req, res),
-);
-router.post('/api/user/promote-admin', authMiddleware, (req, res) =>
-  promoteUserToAdmin(req, res),
-);
-router.delete('/api/user/:id', authMiddleware, (req, res) =>
-  deleteUserById(req, res),
-);
+router.get('/api/user/:id', authMiddleware, asyncHandler(getUserById));
+(router.post(
+  '/api/user/promote-admin',
+  authMiddleware,
+  asyncHandler(promoteUserToAdmin),
+),
+  router.delete('/api/user/:id', authMiddleware, asyncHandler(deleteUserById)));
 
 export default router;

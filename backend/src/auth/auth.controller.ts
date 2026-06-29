@@ -45,5 +45,5 @@ export async function register(req: Request, res: Response) {
 
   const response: UserResponseDto = { ...user, token };
 
-  return res.status(201).json(response);
+  res.status(201).json(response);
 }

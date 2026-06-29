@@ -1,6 +1,8 @@
 import * as bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt.util';
 import { getUserByEMailService } from '../user/user.service';
+import { AppError } from '../errors/AppError';
+import { ErrorMessage } from '../errors/errorMessages';
 
 export async function validateUser(email: string, password?: string) {
   const existingUser = await getUserByEMailService(email);
@@ -13,7 +15,7 @@ export async function validateUser(email: string, password?: string) {
       );
 
       if (!isPasswordValid) {
-        throw new Error('Invalid Credentials');
+        throw new AppError(ErrorMessage.INVALID_CREDENTIALS);
       }
     }
 

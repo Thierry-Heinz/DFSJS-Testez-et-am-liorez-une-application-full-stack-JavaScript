@@ -21,8 +21,8 @@ import { asyncHandler } from '../middleware/asyncHandler';
 const router = Router();
 
 // Auth routes (public)
-router.post('/api/auth/login', (req, res) => login(req, res));
-router.post('/api/auth/register', (req, res) => register(req, res));
+router.post('/api/auth/login', asyncHandler(login));
+router.post('/api/auth/register', asyncHandler(register));
 
 // Session routes (protected)
 router.get('/api/session', authMiddleware, asyncHandler(getAllSessions));

@@ -8,6 +8,18 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['@testing-library/jest-dom'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/tests/**',
+        'src/main.tsx',
+        'src/App.tsx',
+        'src/types/**',
+        'src/services/api.ts',
+      ],
+    },
   },
   server: {
     port: 3000,

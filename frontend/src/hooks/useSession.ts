@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { Session } from '../types';
-import { authService } from '../services/auth.service';
 import api from '../services/api';
 
 export const useSession = (id?: number | undefined) => {
@@ -8,7 +7,6 @@ export const useSession = (id?: number | undefined) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
-  const token = authService.getToken();
   const controller = useRef(new AbortController());
 
   useEffect(() => {
@@ -48,11 +46,7 @@ export const useSession = (id?: number | undefined) => {
     callback?: () => void,
   ): Promise<void> => {
     try {
-      await api.delete(`/session/${sessionId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.delete(`/session/${sessionId}`);
       if (!callback) {
         controller.current = new AbortController();
         fetchSessions(controller.current.signal);

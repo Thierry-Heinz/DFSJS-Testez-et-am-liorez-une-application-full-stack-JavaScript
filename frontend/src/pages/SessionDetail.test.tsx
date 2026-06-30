@@ -83,6 +83,14 @@ describe('Test ===> SessionDetail', () => {
     screen.getByText('Loading session...');
   });
 
+  it('should navigate to session if user is not found', () => {
+    vi.spyOn(authService, 'getCurrentUser').mockReturnValue(null);
+
+    renderSessionDetail();
+
+    expect(mockNavigate).toHaveBeenCalledWith(`/sessions`);
+  });
+
   it('should display error from the fetch', () => {
     vi.mocked(useSession).mockReturnValue({
       sessions: mockSessions,

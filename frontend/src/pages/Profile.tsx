@@ -12,7 +12,6 @@ function Profile() {
   const [promoteLoading, setPromoteLoading] = useState<boolean>(false);
   const [promoteError, setPromoteError] = useState<string>('');
   const user = authService.getCurrentUser();
-  const token = authService.getToken();
   const isDev = import.meta.env.DEV;
 
   useEffect(() => {
@@ -25,11 +24,7 @@ function Profile() {
     if (user) {
       try {
         setLoading(true);
-        const response = await api.get(`/user/${user.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await api.get(`/user/${user.id}`);
         setUserInfo(response.data);
       } catch (err: unknown) {
         setError('Failed to load user information');

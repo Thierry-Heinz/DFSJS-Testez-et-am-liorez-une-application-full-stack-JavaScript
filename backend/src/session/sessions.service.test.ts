@@ -30,7 +30,7 @@ import {
   mockCreateSessionDto,
   mockRawSession,
   mockRawSessions,
-} from '../test/fixtures';
+} from '../tests/fixtures';
 import { UpdateSessionDto } from './dto/session.dto';
 
 const errorMessage = 'Database error';
@@ -92,6 +92,10 @@ describe('Test ==> session.service', () => {
       date: '2024-02-01',
     } as unknown as UpdateSessionDto);
     expect(updatedSession).toEqual(mockRawSession);
+    expect(updateSession).toHaveBeenCalledWith(
+      mockRawSession.id,
+      expect.objectContaining({ date: expect.any(Date) }),
+    );
   });
 
   it('should return an error if the update fails', async () => {

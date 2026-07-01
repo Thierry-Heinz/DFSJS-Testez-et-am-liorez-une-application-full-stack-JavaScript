@@ -85,3 +85,23 @@ export const mockUpdateSessionDto = {
   name: 'Updated Yoga',
   date: new Date('2024-02-01'),
 };
+
+export const mockSessionParticipationDto = {
+  sessionId: 1,
+  userId: 1,
+};
+
+export const mockSessionParticipation = {
+  sessionId: 1,
+  userId: 1,
+  user: mockUser,
+};
+
+export const mockSessionParticipations = [
+  mockSessionParticipation,
+  {
+    sessionId: 1,
+    userId: 2,
+    user: { ...mockUser, id: 2, email: 'user2@test.com' },
+  },
+];

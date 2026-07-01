@@ -10,5 +10,8 @@ export default defineConfig({
       exclude: ['node_modules', 'dist', '**/*.dto.ts', '**/*.schema.ts'],
     },
     setupFiles: ['./src/tests/setup.ts'],
+    sequence: { concurrent: false },
+    pool: 'forks',
+    fileParallelism: false,
   },
 });

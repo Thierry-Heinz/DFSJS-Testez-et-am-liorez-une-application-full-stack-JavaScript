@@ -9,12 +9,10 @@ export const mockRegisterData = {
   lastName: 'test',
 };
 
-export const login = { email: 'test@test.com', password: '123' };
+export const login = { email: 'user1@test.com', password: 'password1' };
 export const password = '123';
 
 export const token = 'fake-token';
-export const goodToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY5NzQ0NjQwMCwiZXhwIjoxNjk3NDQ5MDAwfQ.4g8Z7x8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z8yW8z';
 
 export const mockCreateUserDto = {
   email: 'user1@test.com',
@@ -25,7 +23,6 @@ export const mockCreateUserDto = {
 };
 
 export const mockUser = {
-  id: 1,
   email: 'user1@test.com',
   firstName: 'Alice',
   lastName: 'Dupont',
@@ -34,13 +31,12 @@ export const mockUser = {
   updatedAt: new Date('2024-01-01'),
 };
 
-export const mockUserDto: UserDto = {
+export const mockUserDto = {
   ...mockUser,
   password: 'hashedpassword1',
 };
 
-export const mockTeacher: TeacherDto = {
-  id: 1,
+export const mockTeacher = {
   firstName: 'John',
   lastName: 'Doe',
   createdAt: new Date('2024-01-01'),
@@ -48,7 +44,7 @@ export const mockTeacher: TeacherDto = {
 };
 
 export const mockParticipants: SessionParticipationDto[] = [
-  { sessionId: 1, userId: 1, user: mockUserDto },
+  { sessionId: 1, userId: 1, user: { ...mockUserDto, id: 1 } },
   {
     sessionId: 1,
     userId: 2,

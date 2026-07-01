@@ -118,7 +118,7 @@ export async function updateSession(req: AuthRequest, res: Response) {
     throw new AppError(ErrorMessage.SESSION_NOT_FOUND);
   }
 
-  const existingTeacher = getTeacherByIdService(teacherId);
+  const existingTeacher = await getTeacherByIdService(teacherId);
   if (!existingTeacher) {
     throw new AppError(ErrorMessage.INVALID_TEACHER_ID);
   }

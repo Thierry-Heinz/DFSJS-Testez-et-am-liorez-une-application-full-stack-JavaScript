@@ -2,9 +2,6 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import app from '../app';
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
-import { mockRegisterData, mockUser, mockUserDto } from '../tests/fixtures';
-import { getAllSessions } from './session.controller';
 import {
   createSession,
   createSessionParticipation,
@@ -474,11 +471,8 @@ describe('DELETE /api/session/:id/participate/:userId', () => {
     const teacher = await createTeacher();
     const session = await createSession(teacher.id);
 
-    const { token, userId } = await getAuthToken();
-    const sessionParticipation = await createSessionParticipation(
-      session.id,
-      userId,
-    );
+    const { userId } = await getAuthToken();
+
     const rest = await request(app).delete(
       `/api/session/${session.id}/participate/${userId}`,
     );

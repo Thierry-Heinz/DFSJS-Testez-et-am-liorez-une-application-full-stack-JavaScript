@@ -2,6 +2,13 @@ import { SessionParticipationDto } from '../sessionParticipation/dto/sessionPart
 import { TeacherDto } from '../teacher/dto/teacher.dto';
 import { UserDto } from '../user/dto/user.dto';
 
+export const mockRegisterData = {
+  email: 'test@test1.com',
+  password: 'test!1234',
+  firstName: 'test',
+  lastName: 'test',
+};
+
 export const login = { email: 'test@test.com', password: '123' };
 export const password = '123';
 

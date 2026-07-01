@@ -3,27 +3,9 @@ import request from 'supertest';
 import app from '../app';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { mockRegisterData, mockUser, mockUserDto } from '../tests/fixtures';
 
 const prisma = new PrismaClient();
-
-const mockExistingUser = {
-  id: 1,
-  password: 'test!1234',
-  email: 'test@test.com',
-  firstName: 'test',
-  lastName: 'test',
-  admin: false,
-  createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-01'),
-};
-
-const mockRegisterData = {
-  email: 'test@test1.com',
-  password: 'test!1234',
-  firstName: 'test',
-  lastName: 'test',
-};
-const token = 'fake-token';
 
 afterAll(async () => {
   await prisma.$disconnect();
@@ -38,7 +20,7 @@ describe('POST /api/auth/register', () => {
   });
 
   it('should return an error if email already exists', async () => {
-    await prisma.user.create({ data: mockExistingUser });
+    await prisma.user.create({ data: mockUserDto });
     const rest = await request(app)
       .post('/api/auth/register')
       .send({ ...mockRegisterData, email: 'test@test.com' });
@@ -61,8 +43,8 @@ describe('POST /api/auth/login', () => {
   it('should return 200 with user and token', async () => {
     await prisma.user.create({
       data: {
-        ...mockExistingUser,
-        password: await bcrypt.hash(mockExistingUser.password, 10),
+        ...mockUserDto,
+        password: await bcrypt.hash(mockUserDto.password, 10),
       },
     });
     const rest = await request(app).post('/api/auth/login').send(mockLoginData);
@@ -72,8 +54,8 @@ describe('POST /api/auth/login', () => {
   it('should return an error if credentials are invalid', async () => {
     await prisma.user.create({
       data: {
-        ...mockExistingUser,
-        password: await bcrypt.hash(mockExistingUser.password, 10),
+        ...mockUserDto,
+        password: await bcrypt.hash(mockUserDto.password, 10),
       },
     });
     const rest = await request(app)

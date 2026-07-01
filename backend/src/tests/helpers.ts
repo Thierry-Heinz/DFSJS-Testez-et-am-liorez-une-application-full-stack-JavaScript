@@ -6,10 +6,11 @@ import { mockUserDto } from './fixtures';
 
 const prisma = new PrismaClient();
 
-export async function getAuthToken(admin = false) {
+export async function getAuthToken(admin = false, email = mockUserDto.email) {
   const user = await prisma.user.create({
     data: {
       ...mockUserDto,
+      email,
       admin,
       password: await bcrypt.hash(mockUserDto.password, 10),
     },

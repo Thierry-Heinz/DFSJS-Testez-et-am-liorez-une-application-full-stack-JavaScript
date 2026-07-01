@@ -16,19 +16,7 @@ import { validateUser } from './auth.service';
 import { getUserByEMailService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { generateToken } from '../utils/jwt.util';
-
-const login = { email: 'test@test.com', password: '123' };
-const password = '123';
-const mockUser = {
-  id: 1,
-  email: 'test@test.com',
-  firstName: 'test',
-  lastName: 'test',
-  admin: false,
-  createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-01'),
-};
-const token = 'fake-token';
+import { login, mockUser, password, token } from '../tests/fixtures';
 
 describe('Test ==> auth.service', () => {
   beforeEach(() => {

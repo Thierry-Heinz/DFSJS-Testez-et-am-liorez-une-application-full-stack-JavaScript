@@ -105,3 +105,39 @@ export const mockSessionParticipations = [
     user: { ...mockUser, id: 2, email: 'user2@test.com' },
   },
 ];
+
+export const mockRawTeacher = {
+  id: 1,
+  firstName: 'John',
+  lastName: 'Doe',
+  createdAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01'),
+};
+
+export const mockRawTeachers = [
+  mockRawTeacher,
+  {
+    ...mockRawTeacher,
+    id: 2,
+    firstName: 'Jane',
+    lastName: 'Smith',
+  },
+];
+
+export const mockAdaptedTeacher = {
+  id: 1,
+  firstName: 'John',
+  lastName: 'Doe',
+  createdAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01'),
+};
+
+export const mockAdaptedTeachers = [
+  mockAdaptedTeacher,
+  {
+    ...mockAdaptedTeacher,
+    id: 2,
+    firstName: 'Jane',
+    lastName: 'Smith',
+  },
+];

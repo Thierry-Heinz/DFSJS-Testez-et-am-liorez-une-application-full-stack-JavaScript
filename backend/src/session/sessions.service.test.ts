@@ -31,6 +31,7 @@ import {
   mockRawSession,
   mockRawSessions,
 } from '../test/fixtures';
+import { UpdateSessionDto } from './dto/session.dto';
 
 const errorMessage = 'Database error';
 
@@ -84,6 +85,15 @@ describe('Test ==> session.service', () => {
     expect(updatedSession).toEqual(mockRawSession);
   });
 
+  it('should update a session with a string date', async () => {
+    vi.mocked(updateSession).mockResolvedValue(mockRawSession);
+    const updatedSession = await updateSessionService(mockRawSession.id, {
+      ...mockCreateSessionDto,
+      date: '2024-02-01',
+    } as unknown as UpdateSessionDto);
+    expect(updatedSession).toEqual(mockRawSession);
+  });
+
   it('should return an error if the update fails', async () => {
     vi.mocked(updateSession).mockRejectedValue(new Error(errorMessage));
     await expect(
@@ -95,6 +105,7 @@ describe('Test ==> session.service', () => {
     vi.mocked(deleteSessionById).mockResolvedValue(mockRawSession);
     const deletedSession = await deleteSessionService(mockRawSession.id);
     expect(deletedSession).toEqual(mockRawSession);
+    expect(deleteSessionById).toHaveBeenCalledWith(mockRawSession.id);
   });
 
   it('should return an error if the delete fails', async () => {

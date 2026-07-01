@@ -1,6 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-// 1. Déclarer les mocks des modules
 vi.mock('../user/user.service', () => ({
   getUserByEMailService: vi.fn(),
 }));
@@ -13,7 +12,6 @@ vi.mock('bcrypt', () => ({
   compare: vi.fn(),
 }));
 
-// 2. Importer après les mocks
 import { validateUser } from './auth.service';
 import { getUserByEMailService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';

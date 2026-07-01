@@ -4,9 +4,9 @@
   "description": "Backend API for Yoga Studio App",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "nodemon",
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "ts-node prisma/seed.ts",

@@ -70,6 +70,15 @@ describe('Test ==> sessionParticipation.service', () => {
     ).rejects.toThrow(errorMessage);
   });
 
+  it('should return undefined if the id does not match a user', async () => {
+    vi.mocked(findSessionParticipationById).mockResolvedValue(null);
+    const session = await getSessionParticipationById(
+      mockSessionParticipationDto.sessionId,
+      mockSessionParticipationDto.userId,
+    );
+    expect(session).toBeNull();
+  });
+
   it('should return sessionParticipation if delete succeedes', async () => {
     vi.mocked(deleteSessionParticipationById).mockResolvedValue(
       mockSessionParticipationDto,

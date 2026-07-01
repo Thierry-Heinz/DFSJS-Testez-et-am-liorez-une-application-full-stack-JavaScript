@@ -38,4 +38,9 @@ describe('Test ==> teacher.service', () => {
     vi.mocked(findTeacherById).mockRejectedValue(new Error(errorMessage));
     await expect(getTeacherByIdService(1)).rejects.toThrow(errorMessage);
   });
+
+  it('should return an error if find fails', async () => {
+    vi.mocked(findTeacherById).mockRejectedValue(new Error(errorMessage));
+    await expect(getTeacherByIdService(18)).rejects.toThrow(errorMessage);
+  });
 });

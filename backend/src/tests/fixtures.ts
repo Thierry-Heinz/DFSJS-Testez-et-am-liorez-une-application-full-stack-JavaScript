@@ -2,6 +2,14 @@ import { SessionParticipationDto } from '../sessionParticipation/dto/sessionPart
 import { TeacherDto } from '../teacher/dto/teacher.dto';
 import { UserDto } from '../user/dto/user.dto';
 
+export const mockCreateUserDto = {
+  email: 'user1@test.com',
+  firstName: 'Alice',
+  lastName: 'Dupont',
+  password: 'password1',
+  admin: false,
+};
+
 export const mockUser: UserDto = {
   id: 1,
   email: 'user1@test.com',
@@ -118,24 +126,6 @@ export const mockRawTeachers = [
   mockRawTeacher,
   {
     ...mockRawTeacher,
-    id: 2,
-    firstName: 'Jane',
-    lastName: 'Smith',
-  },
-];
-
-export const mockAdaptedTeacher = {
-  id: 1,
-  firstName: 'John',
-  lastName: 'Doe',
-  createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-01'),
-};
-
-export const mockAdaptedTeachers = [
-  mockAdaptedTeacher,
-  {
-    ...mockAdaptedTeacher,
     id: 2,
     firstName: 'Jane',
     lastName: 'Smith',

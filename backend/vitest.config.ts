@@ -13,5 +13,6 @@ export default defineConfig({
     sequence: { concurrent: false },
     pool: 'forks',
     fileParallelism: false,
+    exclude: ['dist/**', 'node_modules/**'],
   },
 });

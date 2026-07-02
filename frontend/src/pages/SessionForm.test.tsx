@@ -1,11 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import {
-  errorSession,
-  mockSessions,
-  mockTeachers,
-  mockUsers,
-} from '../tests/fixtures';
+import { mockSessions, mockTeachers, mockUsers } from '../tests/fixtures';
 import { authService } from '../services/auth.service';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import SessionForm from './SessionForm';

@@ -1,9 +1,5 @@
-import { renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { mockSessions } from '../tests/fixtures';
-import { useSession } from './useSession';
 import api from '../services/api';
-import { act } from 'react';
 import { useParticipation } from './useParticipation';
 
 vi.mock('../services/api', () => ({

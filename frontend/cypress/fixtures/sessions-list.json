@@ -1,0 +1,11 @@
+[
+  {
+    "id": 4,
+    "name": "Yin Yoga",
+    "date": "2026-03-01T00:00:00.000Z",
+    "description": "Une pratique relaxante et méditative où les postures sont tenues longtemps pour étirer les tissus profonds.",
+    "teacherId": 3,
+    "teacher": { "id": 3, "firstName": "David", "lastName": "Martin" },
+    "users": []
+  }
+]

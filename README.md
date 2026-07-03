@@ -62,7 +62,7 @@ A full-stack web application for managing yoga studio operations, including sess
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Thierry-Heinz/DFSJS-Testez-et-am-liorez-une-application-full-stack-JavaScript.git
+git clone https://github.com/.../DFSJS-Testez-et-am-liorez-une-application-full-stack-JavaScript.git
 cd  DFSJS-Testez-et-ameliorez-une-application-full-stack-JavaScript
 ```
 
@@ -180,6 +180,8 @@ The frontend will run on `http://localhost:3000`
 ### Users
 - `GET /api/user/:id` - Get user by ID (protected)
 - `DELETE /api/user/:id` - Delete user account (protected)
+- `POST /api/user/promote-admin` - Self-promote to admin, dev environment only (protected)
+
 
 ## Database Schema
 
@@ -251,7 +253,8 @@ npm run dev          # Start Vite development server
 npm run build        # Build for production
 npm run preview      # Preview production build
 npm run test         # Run test
-npm run test:coverage # Run test coverage
+npm run test:coverage # Run test coverage for unit & integration
+npm run test:e2e:coverage # Run test coverage for e2e
 ```
 
 ## Project Structure
@@ -382,6 +385,7 @@ run the test in frontend
 cd frontend
 npm run test
 npm run test:coverage # Rapport de couverture
+npm run test:e2e:coverage
 ```
 
 run the test in backend
@@ -396,14 +400,14 @@ npm run test:coverage # Rapport de couverture
 run e2e test in Cypress
 ```bash
 # Terminal 1
-docker-compose up -d postgre-test
+docker-compose up -d postgres-test
 cd backend && npm run dev
 
 # Terminal 2
 cd frontend && npm run dev
 
 # Terminal 3
-cd frontend && npx cypress open
+cd frontend && npm run test:e2e:coverage
 ```
 
 ## Troubleshooting

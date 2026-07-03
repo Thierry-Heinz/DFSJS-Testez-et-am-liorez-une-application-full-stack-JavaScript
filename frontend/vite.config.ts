@@ -1,9 +1,20 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import istanbul from 'vite-plugin-istanbul';
+
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    istanbul({
+      include: 'src/*',
+      exclude: ['node_modules', 'cypress/'],
+      extension: ['.js', '.tsx', '.ts'],
+      requireEnv: false, // instrumente même sans variable d'env
+    }),
+  ],
   test: {
     environment: 'jsdom',
     globals: true,

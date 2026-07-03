@@ -1,17 +1,9 @@
 {
-  "users": [],
-  "id": 2,
-  "name": "Yoga Hatha",
-  "date": "2026-02-20T00:00:00.000Z",
-  "description": "Une pratique douce et accessible à tous, axée sur les postures et la respiration consciente.",
-  "teacherId": 2,
-  "createdAt": "2026-06-18T08:36:05.343Z",
-  "updatedAt": "2026-06-18T08:36:05.343Z",
-  "teacher": {
-    "id": 2,
-    "firstName": "Hélène",
-    "lastName": "Thiercelin",
-    "createdAt": "2026-06-18T08:36:05.332Z",
-    "updatedAt": "2026-06-18T08:36:05.332Z"
-  }
+  "id": 4,
+  "name": "Yin Yoga",
+  "date": "2026-03-01T00:00:00.000Z",
+  "description": "Une pratique relaxante et méditative où les postures sont tenues longtemps pour étirer les tissus profonds.",
+  "teacherId": 3,
+  "teacher": { "id": 3, "firstName": "David", "lastName": "Martin" },
+  "users": []
 }

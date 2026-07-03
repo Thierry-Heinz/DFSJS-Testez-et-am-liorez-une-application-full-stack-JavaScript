@@ -13,6 +13,7 @@ A full-stack web application for managing yoga studio operations, including sess
 - Zod (validation)
 - JWT (authentication)
 - bcrypt (password hashing)
+- Vitest
 
 ### Frontend
 - React 19 (Hooks only)
@@ -21,6 +22,8 @@ A full-stack web application for managing yoga studio operations, including sess
 - TailwindCSS 4.x
 - React Router 6.x
 - Axios
+- Vitest
+- Cypress
 
 ### Infrastructure
 - Docker + Docker Compose
@@ -59,7 +62,8 @@ A full-stack web application for managing yoga studio operations, including sess
 ### 1. Clone the repository
 
 ```bash
-cd p4-dfsjs-starter
+git clone https://github.com/Thierry-Heinz/DFSJS-Testez-et-am-liorez-une-application-full-stack-JavaScript.git
+cd  DFSJS-Testez-et-ameliorez-une-application-full-stack-JavaScript
 ```
 
 ### 2. Install Backend Dependencies
@@ -128,6 +132,7 @@ This will create:
 ### Start the Backend (Terminal 1)
 
 ```bash
+docker-compose up -d postgres
 cd backend
 npm run dev
 ```
@@ -234,6 +239,9 @@ npm run prisma:generate  # Generate Prisma client
 npm run prisma:migrate   # Run database migrations
 npm run prisma:seed      # Seed the database
 npm run prisma:studio    # Open Prisma Studio
+npm run test             # Run test
+npm run test:watch       # Run test on save
+npm run test:coverage    # Run test coverage
 ```
 
 ### Frontend
@@ -242,49 +250,161 @@ npm run prisma:studio    # Open Prisma Studio
 npm run dev          # Start Vite development server
 npm run build        # Build for production
 npm run preview      # Preview production build
+npm run test         # Run test
+npm run test:coverage # Run test coverage
 ```
 
 ## Project Structure
 
 ```
-p4-dfsjs-starter/
+DFSJS-Testez-et-ameliorez-une-application-full-stack-JavaScript/
 ├── backend/
-│   ├── src/
-│   │   ├── controllers/      # Request handlers
-│   │   ├── middleware/       # Auth middleware
-│   │   ├── dto/              # Zod validation schemas
-│   │   ├── utils/            # JWT utilities
-│   │   ├── routes/           # API routes
-│   │   └── app.ts            # Express app setup
 │   ├── prisma/
-│   │   ├── schema.prisma     # Database schema
-│   │   └── seed.ts           # Database seeding
+│   │   └── ...
+│   ├── src/
+│   │   ├── auth/
+│   │   │   ├── dto/
+│   │   │   ├── auth.controller.test.ts
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── auth.service.test.ts
+│   │   │   └── auth.service.ts
+│   │   ├── errors/
+│   │   │   ├── AppError.ts
+│   │   │   └── errorMessages.ts
+│   │   ├── middleware/
+│   │   │   ├── asyncHandler.ts
+│   │   │   ├── auth.middleware.test.ts
+│   │   │   ├── auth.middleware.ts
+│   │   │   ├── errorHandler.test.ts
+│   │   │   └── errorHandler.ts
+│   │   ├── routes/
+│   │   │   └── index.ts
+│   │   ├── session/
+│   │   │   ├── dto/
+│   │   │   ├── session.controller.test.ts
+│   │   │   ├── session.controller.ts
+│   │   │   ├── session.repository.ts
+│   │   │   ├── session.service.test.ts
+│   │   │   ├── session.service.ts
+│   │   │   └── session.utils.ts
+│   │   ├── sessionParticipation/
+│   │   │   ├── dto/
+│   │   │   ├── sessionParticipation.repository.ts
+│   │   │   ├── sessionParticipation.service.test.ts
+│   │   │   └── sessionParticipation.service.ts
+│   │   ├── teacher/
+│   │   │   ├── dto/
+│   │   │   ├── teacher.controller.test.ts
+│   │   │   ├── teacher.controller.ts
+│   │   │   ├── teacher.repository.ts
+│   │   │   ├── teacher.service.test.ts
+│   │   │   └── teacher.service.ts
+│   │   ├── tests/
+│   │   │   ├── fixtures.ts
+│   │   │   ├── helpers.ts
+│   │   │   └── setup.ts
+│   │   ├── user/
+│   │   │   ├── dto/
+│   │   │   ├── user.controller.test.ts
+│   │   │   ├── user.controller.ts
+│   │   │   ├── user.repository.ts
+│   │   │   ├── user.service.test.ts
+│   │   │   └── user.service.ts
+│   │   ├── utils/
+│   │   │   ├── jwt.util.test.ts
+│   │   │   ├── jwt.util.ts
+│   │   │   └── successMessages.ts
+│   │   ├── app.ts
+│   │   └── server.ts
+│   ├── .env
+│   ├── .env.test
 │   ├── package.json
 │   ├── tsconfig.json
-│   └── .env
+│   └── vitest.config.ts
 ├── frontend/
+│   ├── cypress/
+│   │   └── ...
 │   ├── src/
-│   │   ├── pages/            # React page components
-│   │   ├── components/       # Reusable components
-│   │   ├── services/         # API services
-│   │   ├── types/            # TypeScript types
+│   │   ├── components/
+│   │   │   ├── Navbar.test.tsx
+│   │   │   ├── Navbar.tsx
+│   │   │   └── SessionCard.tsx
+│   │   ├── hooks/
+│   │   │   ├── useParticipation.test.ts
+│   │   │   ├── useParticipation.ts
+│   │   │   ├── useSession.test.ts
+│   │   │   └── useSession.ts
+│   │   ├── pages/
+│   │   │   ├── Login.test.tsx
+│   │   │   ├── Login.tsx
+│   │   │   ├── Profile.test.tsx
+│   │   │   ├── Profile.tsx
+│   │   │   ├── Register.test.tsx
+│   │   │   ├── Register.tsx
+│   │   │   ├── SessionDetail.test.tsx
+│   │   │   ├── SessionDetail.tsx
+│   │   │   ├── SessionForm.test.tsx
+│   │   │   ├── SessionForm.tsx
+│   │   │   ├── Sessions.test.tsx
+│   │   │   └── Sessions.tsx
+│   │   ├── services/
+│   │   │   ├── api.ts
+│   │   │   ├── auth.service.test.ts
+│   │   │   └── auth.service.ts
+│   │   ├── tests/
+│   │   │   └── fixtures.ts
+│   │   ├── types/
+│   │   │   └── index.ts
 │   │   ├── App.tsx
 │   │   └── main.tsx
+│   ├── cypress.config.ts
+│   ├── index.html
 │   ├── package.json
-│   ├── vite.config.ts
-│   └── tailwind.config.js
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── .gitignore
 ├── docker-compose.yml
 └── README.md
 ```
 
+
 ## Testing
 
 The project supports comprehensive testing with the following frameworks:
-- **Unit tests**: For testing individual components and utilities
-- **Integration tests**: For testing API endpoints
-- **End-to-end tests**: For testing critical user flows
+- Vitest (unit & integration) => frontend
+- Vitest (unit & integration) => backend
+- Cypress (e2e) => frontend + backend
 
-Run tests with the appropriate npm scripts in each directory.
+run the test in frontend
+```bash
+cd frontend
+npm run test
+npm run test:coverage # Rapport de couverture
+```
+
+run the test in backend
+```bash
+docker compose up postgres-test
+cd backend
+
+npm run test:watch
+npm run test:coverage # Rapport de couverture
+```
+
+run e2e test in Cypress
+```bash
+# Terminal 1
+docker-compose up -d postgre-test
+cd backend && npm run dev
+
+# Terminal 2
+cd frontend && npm run dev
+
+# Terminal 3
+cd frontend && npx cypress open
+```
 
 ## Troubleshooting
 
